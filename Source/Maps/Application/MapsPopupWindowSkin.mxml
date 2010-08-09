@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		xmlns:clgapp="Maps.Application.*"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		alpha.disabledGroup="0.5" >
+
+    <fx:Metadata>
+      [HostComponent("spark.components.Window")]
+    </fx:Metadata>
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" stateGroups="disabledGroup" />
+        <s:State name="normalAndInactive" stateGroups="inactiveGroup" />
+        <s:State name="disabledAndInactive" stateGroups="disabledGroup, inactiveGroup" />
+    </s:states>
+	<fx:Script><![CDATA[
+	]]></fx:Script>
+
+    <s:Rect id="topBackgroundRect" 
+		left="0" right="0" top="0" height="18"
+		topLeftRadiusX="7" topLeftRadiusY="7"
+		topRightRadiusX="7" topRightRadiusY="7">
+        <s:fill>
+            <s:SolidColor color="#888888" alpha="0.95"/>
+        </s:fill>
+    </s:Rect>
+    <s:Rect id="bottomBackgroundRect" 
+		left="0" right="0" top="18" bottom="0"
+		bottomLeftRadiusX="7" bottomLeftRadiusY="7"
+		bottomRightRadiusX="7" bottomRightRadiusY="7">
+        <s:fill>
+            <s:SolidColor id="backgroundFill" color="#222222" alpha="0.95"/>
+        </s:fill>
+    </s:Rect>
+
+	<!-- <s:TitleBar id="titleBar" left="0" right="0" top="0" height="18" skinClass="Desktop.Application.Skins.CollagePopupTitleBarSkin" /> -->
+
+    <s:Group id="contentGroup" left="2" right="2" top="20" bottom="2" minHeight="0" minWidth="0">
+		<s:layout>
+	        <s:BasicLayout clipAndEnableScrolling="true"/>
+	    </s:layout>
+	</s:Group>
+
+</s:Skin>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window
+    xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+    width="640"
+    height="480"
+    title=""
+    showStatusBar="false"
+	resizable="false"
+    creationComplete="onCreationComplete()">
+    <s:layout>
+        <s:BasicLayout/>
+    </s:layout>
+    <fx:Script>
+        <![CDATA[
+        	import mx.core.IVisualElementContainer;
+    		import mx.core.UIComponent;
+            
+            private var _Opened:Boolean = false;
+			private var _Content:UIComponent = null;
+			
+            override public function open(openWindowActive:Boolean = true):void
+            {
+                if (_Opened) {
+                    visible = true;
+                    if (openWindowActive)
+                       activate();
+                } else {
+                    super.open(openWindowActive);
+                    _Opened = true;
+                }
+            }
+            
+            private function onCreationComplete():void
+            {
+                // hack to remove status bar
+                //(statusBar.parent as IVisualElementContainer).removeElement(statusBar);
+                if (gripper != null)
+				    gripper.visible = false;
+				if (contentGroup && _Content) {
+					contentGroup.removeAllElements();
+					contentGroup.addElement(_Content);
+				}
+          }
+
+			public function SetContent(content:UIComponent):void {
+				if (contentGroup) {
+					contentGroup.removeAllElements();
+					contentGroup.addElement(content);
+					_Content = null;
+				} else {
+					_Content = content;
+				}
+			}
+        ]]>
+    </fx:Script>
+</s:Window>

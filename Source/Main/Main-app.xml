@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://ns.adobe.com/air/application/2.0">
+	<id>com.endlesspaths.MapReader</id>
+	<version>1.0.0</version>
+	<filename>MapReader</filename>
+	<allowBrowserInvocation>true</allowBrowserInvocation>
+	<initialWindow>
+		<content>Main.swf</content>
+		<visible>false</visible>
+		<systemChrome>standard</systemChrome>
+		<transparent>false</transparent>
+		<width>1000</width>
+		<height>700</height>
+	</initialWindow>
+</application>

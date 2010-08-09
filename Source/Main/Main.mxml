@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+    xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:maps="Maps.Application.*"
+	menu="{nativeMenu}"
+	showStatusBar="false"
+	minHeight="200"	minWidth="200"
+	height="700" width="1000"
+	title="Collage"
+	applicationComplete="Initialize()" >
+	<fx:Script><![CDATA[
+		import mx.controls.Alert;
+		import Maps.Application.*;
+	
+		private var app:AppMain;
+	
+		private function Initialize():void
+		{
+			nativeMenu.mapsApp = mapsApp;
+			mapsApp.window = this;
+		}
+		
+		private function Fullscreen():void
+		{
+			if (stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
+				stage.displayState = StageDisplayState.NORMAL;
+			else
+				stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+		}
+	]]></fx:Script>
+	<fx:Declarations>
+		<maps:MapsMenu id="nativeMenu" showRoot="false" labelField="@label" keyEquivalentField="@key" mnemonicIndexField="@mnemonicIndex" />
+	</fx:Declarations>
+	<maps:AppMain id="mapsApp" skinClass="Maps.Application.Skins.ApplicationSkin" height="100%" width="100%" />
+</s:WindowedApplication>

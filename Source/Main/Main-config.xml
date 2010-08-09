@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<flex-config>
+	<benchmark>false</benchmark>
+	<default-background-color>#FFFFFF</default-background-color>
+	<use-network>true</use-network>
+	<compiler>
+		<debug>true</debug>
+		<incremental>true</incremental>
+		<optimize>true</optimize>
+		<omit-trace-statements>false</omit-trace-statements>
+		<keep-generated-actionscript>false</keep-generated-actionscript>
+		<warn-no-constructor>true</warn-no-constructor>
+		<warn-no-explicit-super-call-in-constructor>false</warn-no-explicit-super-call-in-constructor>
+		<show-actionscript-warnings>true</show-actionscript-warnings>
+		<show-binding-warnings>true</show-binding-warnings>
+		<show-unused-type-selector-warnings>true</show-unused-type-selector-warnings>
+	</compiler>
+	<metadata>
+		<title>MapReader Desktop Application</title>
+		<description>MapReader Desktop is created by Endless Paths.</description>
+		<publisher>Made in TextMate</publisher>
+		<creator>Endless Paths</creator>
+		<language>EN</language>
+	</metadata>
+	<raw-metadata></raw-metadata>
+</flex-config>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		xmlns:maps="Maps.Map.*" 
+		xmlns:mx="library://ns.adobe.com/flex/mx" 
+		mouseMove="MouseMoved(event)"
+		resize="Resized(event)"
+		mouseWheel="ZoomWheel(event)" >
+	<fx:Metadata>
+		<![CDATA[ 
+		[HostComponent("Maps.Application.AppMain")]
+		]]>
+	</fx:Metadata> 
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+	</s:states>
+	<fx:Declarations>
+	</fx:Declarations>
+	<fx:Script><![CDATA[
+		import flash.events.MouseEvent;
+		import flash.geom.Point;
+		import mx.events.ResizeEvent;
+		
+		private var prevMousePos:Point;		
+		
+		private var offset:Point = new Point(0,0);
+		
+		protected function MouseMoved(event:MouseEvent):void
+		{
+			if (!prevMousePos)
+				prevMousePos = new Point(event.stageX, event.stageY);
+			
+			if (event.buttonDown) {
+				offset.x += event.stageX - prevMousePos.x;
+				offset.y += event.stageY - prevMousePos.y;
+			}	
+			
+			prevMousePos.x = event.stageX;
+			prevMousePos.y = event.stageY;
+			Resized(null);
+		}
+		
+		protected function Resized(event:ResizeEvent):void
+		{
+			if (!mapView)
+				return;
+			
+			mapView.x = (width * 0.5) - (mapView.width * 0.5) + offset.x;
+			mapView.y = (height * 0.5) - (mapView.height * 0.5) + offset.y;
+		}
+	
+		protected function ZoomWheel(event:MouseEvent):void
+		{
+			mapView.width += event.delta * 100;
+			
+			if (mapView.width < 100)
+				mapView.width = 100;
+			else if (mapView.width > 10000)
+				mapView.width = 10000;
+			
+			mapView.Resize();
+			Resized(null);
+		}
+		
+	]]></fx:Script>
+	<s:Group id="contentGroup" left="0" right="0" top="0" bottom="0" minWidth="0" minHeight="0">
+		<s:layout>
+			<s:BasicLayout/>
+		</s:layout>
+	</s:Group>
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry alpha="0.5" color="#E2E2E2" ratio="0"/>
+				<s:GradientEntry alpha="0.5" color="#B7B7B7" ratio="1"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	<maps:MapView id="mapView" skinClass="Maps.Map.Skins.MapViewSkin" width="800" resize="mapView.Resize()"/>
+</s:Skin>
