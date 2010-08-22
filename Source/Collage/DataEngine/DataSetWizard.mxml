@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:clgdata="Collage.DataEngine.*"
+		xmlns:clgclip="Collage.Clip.*"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		width="100%" height="100%"
+		>
+	<fx:Script><![CDATA[
+		import mx.collections.ArrayList;
+		import mx.events.PropertyChangeEvent;
+		import Collage.Application.*;
+		import Collage.Document.*;
+		import Collage.Utilities.Logger.*;
+		
+		[Bindable]public var dataSet:DataSet;
+
+		private function Complete():void
+		{
+
+		}
+
+		private function Submit():void
+		{
+			CollageApp.instance.ClosePopup("dataset");
+		}
+	]]></fx:Script>
+    <s:layout>
+        <s:BasicLayout/>
+    </s:layout>
+	<s:Group left="15" right="15" top="15" bottom="15" >
+		<s:Label text="Data Set: {dataSet.title}" top="0" left="0" fontSize="18" color="#feffaf" />
+		<s:VGroup top="35" width="100%" bottom="40" gap="12">
+			<s:Label text="Total Rows: {dataSet.totalRows}" color="#feffaf" fontSize="12" width="100%" />
+			<s:Label text="Created On: {dataSet.created}" color="#feffaf" fontSize="12" width="100%" />
+			<s:Label text="Updated On: {dataSet.changed}" color="#feffaf" fontSize="12" width="100%" />
+			<s:List id="columnsList" requireSelection="false" contentBackgroundColor="#dee4ea" borderVisible="false" height="100%" width="100%" dataProvider="{dataSet.columns}" changing="event.preventDefault()">
+				<s:itemRenderer>
+					<fx:Component>
+						<s:ItemRenderer focusRect="false" width="100%" height="25" doubleClickEnabled="true">
+							<s:states>
+								<s:State name="normal"/>
+								<s:State name="hovered"/>
+								<s:State name="editing"/>
+								<s:State name="selected"/>
+							</s:states>
+							<s:Rect width="100%" top="0" bottom="0" includeIn="selected">
+								<s:fill>
+									<s:LinearGradient rotation="90">
+										<s:GradientEntry alpha="1.0" color="#b0bed7" ratio="0"/>
+										<s:GradientEntry alpha="1.0" color="#8295b7" ratio="1"/>
+									</s:LinearGradient>
+								</s:fill>
+							</s:Rect>
+							<s:Line width="100%" top="0" includeIn="selected">
+								<s:stroke>
+									<s:SolidColorStroke caps="none" color="#a2b0cb" weight="1"/>
+								</s:stroke>
+							</s:Line>
+							<s:Group left="10" right="10" height="100%">
+								<s:layout>
+									<s:HorizontalLayout verticalAlign="middle"/>
+								</s:layout>
+								<s:Label id="titleText" text="{data.label}" color="0x222222" color.selected="#ffffff" maxDisplayedLines="1" fontWeight="bold" fontSize="12">
+									<s:filters>
+										<s:DropShadowFilter distance="1" color="#555555" blurX="1" blurY="1" includeIn="selected"/>
+									</s:filters>
+								</s:Label>
+								<s:Label id="typeText" text="{data.datatype}" color="0x555555" maxDisplayedLines="1" fontSize="10" width="100%" textAlign="end"/>
+							</s:Group>
+						</s:ItemRenderer>
+					</fx:Component>
+				</s:itemRenderer>
+			</s:List>
+
+			<s:HGroup gap="12" verticalAlign="middle">
+			</s:HGroup>
+		</s:VGroup>
+		<s:HGroup bottom="0" right="0">
+			<s:Button right="0" click="Submit()" label="Close" />
+		</s:HGroup>
+	</s:Group>
+</s:Group>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009" >
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+        <s:State name="editing" />
+    </s:states>
+    <fx:Metadata>
+        <![CDATA[ 
+        	[HostComponent("Collage.Document.EditPageToolbar")]
+        ]]>
+    </fx:Metadata>
+	<fx:Script><![CDATA[ 
+		import mx.collections.ArrayList;
+
+	   	[Bindable]public var gridDefaults:ArrayList = new ArrayList(
+		            [8, 10, 16, 25, 32, 50]); 
+	]]>	
+	</fx:Script>
+	<s:layout>
+		<s:HorizontalLayout verticalAlign="middle"/>
+	</s:layout>
+	<s:CheckBox label="Show Grid" selected="@{hostComponent.model.appClass.appGrid.visible}"/>
+	<s:ComboBox dataProvider="{gridDefaults}" width="50" selectedItem="@{hostComponent.model.appClass.appGrid.density}"/>
+	<s:CheckBox label="Snap To Grid" selected="@{hostComponent.model.appClass.appGrid.snap}"/>
+</s:Skin>

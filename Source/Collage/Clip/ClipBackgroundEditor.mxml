@@ -1,0 +1,30 @@
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	xmlns:ep="com.endlesspaths.components.*"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	clipAndEnableScrolling="true" >
+	<fx:Script><![CDATA[
+		[Bindable]public var viewObject:Object;
+	]]></fx:Script>
+	<ep:ImageButton text="Background" image="@Embed('/Assets/icons/fill-color.png')" click="backgroundEditorPopup.popUpOpen = !backgroundEditorPopup.popUpOpen;" skinClass="com.endlesspaths.skins.ImageButtonPlain" />
+	<ep:AutoPopUpAnchor id="backgroundEditorPopup" displayPopUp="false" popUpPosition="below" enabled="true" top="48">
+		<ep:CalloutPanel id="backgroundEditorPanel" skinClass="com.endlesspaths.skins.CalloutPanelBlackHUDSkin" arrowPosition="top" title="Background">
+			<ep:ColorSwatchAlphaSelector selectedColor="@{viewObject.backgroundColor}" selectedAlpha="@{viewObject.backgroundAlpha}" skinClass="com.endlesspaths.skins.ColorSwatchAlphaSelectorSkin" />
+			<s:Label text="Border" color="0xffffff" textAlign="center" width="100%"/>
+			<ep:ColorSwatchAlphaSelector selectedColor="@{viewObject.borderColor}" selectedAlpha="@{viewObject.borderAlpha}" skinClass="com.endlesspaths.skins.ColorSwatchAlphaSelectorSkin" />
+			<s:HGroup width="100%">
+				<s:Label text="Border Size:" color="0xffffff" width="85"/>
+				<s:HSlider minimum="0" maximum="72" value="@{viewObject.borderWeight}" liveDragging="true" width="100%"/>
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label text="Corner Radius:" color="0xffffff" width="85"/>
+				<s:HSlider minimum="0" maximum="72" value="@{viewObject.borderRadius}" liveDragging="true" width="100%"/>
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label text="Margins:" color="0xffffff" width="85"/>
+				<s:HSlider minimum="0" maximum="72" value="@{viewObject.contentMargin}" liveDragging="true" width="100%"/>
+			</s:HGroup>
+		</ep:CalloutPanel>
+	</ep:AutoPopUpAnchor>
+</s:Group>

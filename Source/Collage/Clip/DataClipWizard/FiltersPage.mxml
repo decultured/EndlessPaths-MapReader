@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<clgwiz:DataClipWizardPage xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:clgdata="Collage.DataEngine.*"
+		xmlns:clgwiz="Collage.Clip.DataClipWizard.*" >
+	<fx:Script><![CDATA[
+		import Collage.Utilities.Logger.*;
+		import Collage.Application.*;
+		import Collage.DataEngine.*;
+		import spark.events.IndexChangeEvent;
+		import mx.collections.ArrayList;
+
+		[Bindable]public var queryFields:ArrayList;
+		[Bindable]public var sortDirections:ArrayList = new ArrayList(
+				[ {label:"Asc.", data:"asc"},
+				{label:"Desc.", data:"desc"}
+				]);
+		public override function Reset():void
+		{
+			super.Reset();
+			complete = true;
+			canSubmit = true;
+			title = "Choose filters (Optional)";
+			
+			if (!query || !queryDefinition)
+				return;
+
+			queryFields = filtersList.queryFields = query.GetColumnSelectionsArrayList();
+			
+			
+			if (query.firstSort) {
+				for (var i:int = 0; i < queryFields.length; i++)
+				{
+					if (queryFields.getItemAt(i)["columnID"] == query.firstSort) {
+						firstSort.selectedIndex = i;
+						break;
+					}
+				}
+			}
+		}
+
+		public override function Save():void
+		{
+			if (firstSort.selectedItem) {
+				query.firstSort = firstSort.selectedItem["columnID"];
+				query.firstSortAsc = firstSortDirection.text == "ascending";
+			}
+		}
+
+		public function AddFilter():void
+		{
+			var newFilter:DataQueryFilter = new DataQueryFilter();
+			query.filters.addItem(newFilter);
+			filtersList.dataQuery = null;
+			filtersList.dataQuery = query;
+		}
+	]]></fx:Script>
+	<s:VGroup width="100%" height="100%" gap="10">
+		<s:HGroup verticalAlign="middle" >
+			<s:Label text="Filter where: " color="#feffaf" fontSize="14" width="100%"/>
+			<s:Button click="AddFilter()" label="Add Filter" enabled="{query.filters.length &lt; 10}"/>
+		</s:HGroup>
+		<clgwiz:FiltersList id="filtersList" dataQuery="{query}" width="100%" height="100%"/>
+		<s:HGroup verticalAlign="middle" >
+			<s:Label text="Sort results by" color="#feffaf" fontSize="14" />
+			<s:DropDownList id="firstSort" prompt="Select Column" width="140" labelField="columnName" dataProvider="{queryFields}" />
+			<s:Label text="{(query.firstSortAsc)?'ascending':'descending'}" id="firstSortDirection" color="0x9999ff" textDecoration="underline" maxDisplayedLines="1" fontSize="14" click="{query.firstSortAsc = !query.firstSortAsc;}" />
+			<!--<s:DropDownList id="firstSortDirection" width="70" labelField="label" dataProvider="{sortDirections}" requireSelection="true" />-->
+		</s:HGroup>
+	</s:VGroup>
+</clgwiz:DataClipWizardPage>

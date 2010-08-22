@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<clgwiz:DataClipWizardPage xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:clgdata="Collage.DataEngine.*"
+		xmlns:clgwiz="Collage.Clip.DataClipWizard.*" >
+		<fx:Metadata>
+			[Event(name="itemDoubleClicked", type="flash.events.Event")]
+		</fx:Metadata>
+	<fx:Script><![CDATA[
+		import Collage.Utilities.Logger.*;
+		import Collage.Application.*;
+		import Collage.DataEngine.*;
+		import spark.events.IndexChangeEvent;
+		import mx.collections.ArrayList;
+
+		[Bindable]public var numRowsChangable:Boolean = true;
+
+		public override function Reset():void
+		{
+			super.Reset();
+			title = "Choose a dataset";
+
+			if (!query || !query.dataset)
+				return;
+			
+			numRowsChangable = (queryDefinition.maxRowsReturned != queryDefinition.minRowsReturned);
+
+			for (var i:int = 0; i < DataEngine.datasets.length; i++)
+			{
+				if (DataEngine.datasets.getItemAt(i)["id"] == query.dataset) {
+					complete = true;
+					break;
+				}
+			}
+
+		}
+
+		public override function Save():void
+		{
+			if (dataSetsList.selectedItem) {
+				complete = true;
+				if (query.dataset != (dataSetsList.selectedItem as DataSet).id) {
+					query.dataset = (dataSetsList.selectedItem as DataSet).id;
+					query.ResetFields();
+				}
+			}
+
+			Logger.LogDebug("Selected Dataset: " + query.dataset, this)
+		}
+		
+		private function SelectionChanged():void
+		{
+			if (dataSetsList.selectedIndex < 0)
+				complete = false;
+			else 
+				complete = true;
+		}
+	]]></fx:Script>
+	<s:VGroup width="100%" height="100%" gap="10">
+		<clgdata:DataSetsList id="dataSetsList" dataQuery="{query}" change="SelectionChanged()" itemDoubleClicked="FinishAndProceed()" width="100%" height="100%"/>
+		<s:HGroup verticalAlign="middle" includeInLayout="{numRowsChangable}" visible="{numRowsChangable}">
+			<s:Label text="How many rows?" color="#feffaf" fontSize="14" />
+			<s:NumericStepper value="@{query.limit}" stepSize="1" maximum="{queryDefinition.maxRowsReturned}" minimum="{queryDefinition.minRowsReturned}" />
+		</s:HGroup>
+	</s:VGroup>
+</clgwiz:DataClipWizardPage>

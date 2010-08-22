@@ -1,5 +1,7 @@
 package Maps.Application
 {
+	import spark.components.Group;
+	import spark.components.TitleWindow;
 	import spark.components.SkinnableContainer;
 	import mx.events.AIREvent;
 	import mx.graphics.*;
@@ -11,47 +13,61 @@ package Maps.Application
 	import flash.utils.*;
 	import flash.geom.*;
 	import flash.net.*;
-
-	import Maps.Map.*;
-	import Maps.Map.Skins.*;
+	import Maps.MapImporter.*;
+	import Collage.Clips.Map.*;
+	import Collage.Application.*;
 	import Collage.Utilities.Logger.*;
 	import Collage.Utilities.json.*;
 
-	import Maps.MapImporter.*;
 	
-	public class AppMain extends SkinnableContainer
+	public class AppMain extends CollageBaseApp
 	{
 		public var window:DisplayObject;
 		public var shapeReader:ShapeReader = new ShapeReader();
+		
+		[Bindable]public static var instance:AppMain = null;
 
-		[SkinPart(required="true")]
-		[Bindable]public var mapView:MapView;
+		[Bindable]public var mapClip:MapClip = new MapClip();
 		
 		protected var _PopupWindows:Object = new Object();
 		protected var _PopupWindowContents:Object = new Object();
 
+		[SkinPart(required="true")]
+		public var toolbar:Group;
+
 		public function AppMain():void
 		{
+			instance = this;
+			addElement(mapClip.view);
+		}
+		
+		public function SetToolbar():void {	
+			toolbar.addElement(mapClip.CreateEditor());
 		}
 		
 		public function RunImporter():void
 		{
-			shapeReader.mapView = mapView;
+
+			shapeReader.mapClip = mapClip;
 			shapeReader.RunImporter();
 		}
 		
-		public function OpenPopup(contents:UIComponent, name:String, modal:Boolean = true, size:Point = null):void {
- 			var newWindow:MapsPopupWindow = null;
+        public override function OpenPopup(contents:UIComponent, name:String, modal:Boolean = true, size:Point = null):void {
+ 			var newWindow:CollagePopupWindow = null;
 
 			if (!size)
 				size = new Point(500, 350);
 				
-			if (_PopupWindows[name] && _PopupWindows[name] is MapsPopupWindow) {
-				newWindow = _PopupWindows[name] as MapsPopupWindow;
+			if (_PopupWindows[name] && _PopupWindows[name] is CollagePopupWindow) {
+				newWindow = _PopupWindows[name] as CollagePopupWindow;
 				newWindow.removeAllElements();
 				newWindow.addElement(contents);
+			} 
+			else if (_PopupWindows[name] && _PopupWindows[name] is TitleWindow) {
+				super.OpenPopup(contents, name, modal);
+				return;
 			} else {
-				newWindow = new MapsPopupWindow();
+				newWindow = new CollagePopupWindow();
 				newWindow.systemChrome = "none";
 				newWindow.type = NativeWindowType.NORMAL;
 				newWindow.resizable = false;
@@ -59,7 +75,7 @@ package Maps.Application
 	            newWindow.height = size.y;
 				newWindow.transparent = true;
 				newWindow.removeAllElements();
-				newWindow.setStyle("skinClass", MapsPopupWindowSkin);
+				newWindow.setStyle("skinClass", CollagePopupWindowSkin);
 				newWindow.addElement(contents);
 				newWindow.addEventListener(Event.CLOSE, HandlePopUpClose);
 				_PopupWindows[name] = newWindow;
@@ -72,7 +88,7 @@ package Maps.Application
                 Logger.LogError("Problem Opening Popup Window: " + err, this);
             }
         }
-        
+		
 		public function HandlePopUpClose(event:Event):void
 		{
 			for (var key:String in _PopupWindows) {
@@ -81,21 +97,25 @@ package Maps.Application
 			}
 		}
 		
-        public function ClosePopup(name:String):void {
- 			var newWindow:MapsPopupWindow = null;
-			if (_PopupWindows[name] && _PopupWindows[name] is MapsPopupWindow) {
-				newWindow = _PopupWindows[name] as MapsPopupWindow;
+        public override function ClosePopup(name:String):void {
+ 			var newWindow:CollagePopupWindow = null;
+			if (_PopupWindows[name] && _PopupWindows[name] is CollagePopupWindow) {
+				newWindow = _PopupWindows[name] as CollagePopupWindow;
 				newWindow.close();
 				Logger.LogDebug("Closed Popup Window: " + name, this);
 			} 
+			else if (_PopupWindows[name] && _PopupWindows[name] is TitleWindow) {
+				super.ClosePopup(name);
+				return;
+			}
         }
 		
-		public function Quit():void
+		public override function Quit():void
 		{
 			NativeApplication.nativeApplication.exit();	
 		}
 		
-		public function SaveFile():void
+		public override function SaveFile():void
 		{
 			var file:File = File.desktopDirectory.resolvePath("file.clg");
 			file.addEventListener(Event.SELECT, SaveFileEvent);

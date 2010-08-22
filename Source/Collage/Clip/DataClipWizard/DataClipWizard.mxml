@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:clgdata="Collage.DataEngine.*"
+		xmlns:clgclip="Collage.Clip.*"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		width="100%" height="100%"
+		creationComplete="Reset()">
+	<fx:Script><![CDATA[
+		import Collage.Application.*;
+		import Collage.DataEngine.*;
+		import Collage.Utilities.Logger.*;
+		import Collage.Clip.*;
+		import mx.collections.ArrayList;
+		
+		[Bindable]public var clip:Clip;
+		[Bindable]public var query:DataQuery;
+		[Bindable]public var queryDefinition:QueryDefinition;
+
+		[Bindable]public var currentPage:DataClipWizardPage = null;
+		[Bindable]public var pages:ArrayList = new ArrayList();
+		[Bindable]public var numPages:uint = 0;
+		[Bindable]public var currentPageID:uint = 0;
+
+		public function GoToPage(page:uint):void
+		{
+			if (currentPage) {
+				currentPage.removeEventListener(DataClipWizardPage.MOVE_ON_EVENT, MoveOnHandler);
+				if (currentPage.complete)
+					currentPage.Save();
+			}
+
+			if (page < pages.length)
+				currentPageID = page;
+			else
+				currentPageID = pages.length - 1;
+				
+			currentPage = pages.getItemAt(currentPageID) as DataClipWizardPage;
+			currentPage.Reset();
+			currentPage.addEventListener(DataClipWizardPage.MOVE_ON_EVENT, MoveOnHandler, false, 0, true);
+			
+			if (pageContainer) {
+				pageContainer.removeAllElements();
+				pageContainer.addElement(currentPage);
+			}
+		}
+		
+		public function Reset():void
+		{
+			if (!queryDefinition || !query || !clip)
+				return;
+			
+			pages = new ArrayList();
+			AddPage(new DataSetsPage());
+			for (var i:uint = 0; i < queryDefinition.fieldDefinitions.length; i++) {
+				AddPage(new ColumnsPage(), i);
+			}
+			AddPage(new FiltersPage());
+//			AddPage(new UpdatesPage());
+//			AddPage(new SummaryPage());
+			
+			GoToPage(0);
+		}
+		
+		public function AddPage(page:DataClipWizardPage, columnIndex:uint = 0):void
+		{
+			page.clip = clip;
+			page.query = query;
+			page.queryDefinition = queryDefinition;
+			page.columnIndex = columnIndex;
+			page.pageNumber = pages.length + 1;
+			page.setStyle("top", "0");
+			page.setStyle("bottom", "0");
+			page.setStyle("left", "0");
+			page.setStyle("right", "0");
+
+			pages.addItem(page);
+			numPages = pages.length;
+		}		
+		
+		private function Submit():void
+		{
+			if (!currentPage || !currentPage.complete)
+				return;
+			
+			Logger.LogDebug("Submit Selected Dataset: " + query.dataset, this)
+
+			currentPage.Save();
+			query.LoadQueryResults();
+			CollageApp.instance.ClosePopup("datawizard");
+		}
+		
+		protected function MoveOnHandler(event:Event):void
+		{
+			NextPage();
+		}
+		
+		public function NextPage():void
+		{
+			if (currentPageID < numPages - 1) {
+				GoToPage(currentPageID + 1);
+			} else {
+				Submit();
+			}
+		}
+		
+		public function PrevPage():void
+		{
+			if (currentPageID > 0) {
+				GoToPage(currentPageID - 1);
+			}
+		}
+		
+	]]></fx:Script>
+    <s:layout>
+        <s:BasicLayout/>
+    </s:layout>
+	<s:Group id="PageGroup" left="15" right="15" top="15" bottom="15">
+		<s:Label text="{currentPage.title}" fontWeight="normal" top="0" left="0" fontSize="18" color="#feffaf" />
+		<s:Group id="pageContainer" top="35" bottom="40" left="15" right="15">
+		</s:Group>
+		<s:HGroup bottom="0" right="0">
+			<s:Button click="PrevPage()" label="Back" visible="{currentPageID &gt; 0}" includeInLayout="{currentPageID &gt; 0}" />
+			<s:Button click="Submit()" label="Submit" visible="{currentPage.canSubmit || currentPageID == numPages - 1}" includeInLayout="{currentPage.canSubmit || currentPageID == numPages - 1}" enabled="{currentPage.complete}" />
+			<s:Button click="NextPage()" label="Next" visible="{currentPageID &lt; numPages - 1}" includeInLayout="{currentPageID &lt; numPages - 1}" enabled="{currentPage.complete}"/>
+		</s:HGroup>
+	</s:Group>
+</s:SkinnableContainer>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group
+	width="100%"
+	height="100%"
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	creationComplete="handleCreationComplete();" >
+	<fx:Script>
+		<![CDATA[
+			import flash.net.*;
+			import flash.events.*;
+			import mx.core.IFlexDisplayObject;
+			import com.adobe.serialization.json.JSON;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			import Collage.DataEngine.*;
+			import Collage.Utilities.Logger.*;
+
+			public static const CLOSED:String = "CLOSED";
+			public static const COMPLETE:String = "COMPLETE";
+
+			[Bindable]
+			public var dashboardList:ArrayCollection;
+
+			public var selectedBox:Object;
+
+			public function get DashboardID():String { if(dashboardListGroup.selectedItem != null) { return dashboardListGroup.selectedItem["id"]; } else { return null; } }
+
+			private function handleCreationComplete():void {
+				dashboardList = null;
+				dashboardList = new ArrayCollection();
+				
+				GetList();
+			}
+
+			private function closeMe():void {
+				dispatchEvent(new Event(CLOSED));
+			}
+
+			private function GetList():void {
+				var requestUrl:String = null;
+				var request:URLRequest = new URLRequest( DataEngine.getUrl("/api/v1/storage/dashboard/list") );
+
+				var params:URLVariables = new URLVariables();
+				params.aT = Session.AuthToken;
+
+				request.data = params;
+	            request.requestHeaders.push(new URLRequestHeader("X-Requested-With", "XMLHttpRequest"));
+				request.method = URLRequestMethod.GET;
+
+				var loader:URLLoader = new URLLoader();
+
+				loader.addEventListener(Event.COMPLETE, GetList_Complete);
+				loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, GetList_Error);
+				loader.addEventListener(IOErrorEvent.IO_ERROR, GetList_Error);
+
+				loader.load( request );
+			}
+
+			private function GetList_Complete(event:Event):void {
+				Logger.LogDebug("DashboardListUI::GetList_Complete: " + event, this);
+
+				var results:Array = JSON.decode(event.target.data);
+				
+				for each(var dash:Object in results) {
+					dashboardList.addItemAt( dash, 0 );
+				}
+				
+				dashboardListGroup.dataProvider = dashboardList;
+			}
+
+			private function GetList_Error(event:Event):void {
+				Logger.LogDebug("DashboardListUI::GetList_Error: " + event, this);
+			}
+
+			private function openDashboard(e:Event):void {
+				if(dashboardListGroup.selectedItem == null) {
+					return;
+				}
+
+				dispatchEvent(new Event(COMPLETE));
+				closeMe();
+			}
+
+		]]>
+	</fx:Script>
+	<fx:Style>
+		.selected {
+			backgroundColor: #0DA0D8;
+			fontColor: #FFFFFF;
+		}
+	</fx:Style>
+	<s:Group id="PageGroup" left="15" right="15" top="15" bottom="15">
+		<s:Label text="Open Dashboard From Cloud" fontWeight="normal" top="0" left="0" fontSize="18" color="#feffaf" />
+		<s:Group top="35" bottom="40" width="100%" clipAndEnableScrolling="true">
+			<s:List id="dashboardListGroup" width="100%" height="100%" contentBackgroundColor="#dee4ea" borderVisible="false" doubleClick="{openDashboard(event);}" doubleClickEnabled="true">
+				<s:layout>
+					<s:TileLayout horizontalGap="0" verticalGap="0"/>
+				</s:layout>
+				<s:itemRenderer>
+					<fx:Component>
+						<s:ItemRenderer focusRect="false" autoDrawBackground="false" >
+							<s:states>
+								<s:State name="normal"/>
+								<s:State name="hovered"/>
+								<s:State name="editing"/>
+								<s:State name="selected"/>
+							</s:states>
+							<fx:Script><![CDATA[
+								import Collage.DataEngine.*;
+							]]></fx:Script>
+							<s:Rect left="4" right="4" top="4" bottom="4" includeIn="selected"
+									radiusX="5" radiusY="5">
+								<s:fill>
+									<s:LinearGradient rotation="90">
+										<s:GradientEntry alpha="1.0" color="#b0bed7" ratio="0"/>
+										<s:GradientEntry alpha="1.0" color="#8295b7" ratio="1"/>
+									</s:LinearGradient>
+								</s:fill>
+							</s:Rect>
+							<s:Rect left="4" right="4" top="4" bottom="4" includeIn="hovered"
+									radiusX="5" radiusY="5">
+								<s:fill>
+									<s:SolidColor alpha="1.0" color="#c1cfe8" />
+								</s:fill>
+							</s:Rect>
+							<mx:VBox id="dashboardItemBox" paddingLeft="12" paddingRight="12" paddingBottom="12" paddingTop="12">
+								<s:Group width="106" height="81">
+									<s:Rect width="100%" height="100%" radiusX="3" radiusY="3">
+										<s:fill>
+											<s:SolidColor alpha="1.0" color="#ffffff" />
+										</s:fill>
+									</s:Rect>
+									<mx:Image width="100" height="75" horizontalCenter="0" verticalCenter="0" source="{DataEngine.getUrl('api/v1/storage/dashboard/'+ String(data.id) +'/snapshot.png?aT='+ Session.AuthToken)}"/>
+									<s:filters>
+										<s:DropShadowFilter distance="1" color="#555555" blurX="2" blurY="2" />
+									</s:filters>
+								</s:Group>
+								<s:Label text="{data.title}" color="#222222" color.selected="#ffffff" width="100" fontSize="12" textAlign="center" maxDisplayedLines="1" >
+									<s:filters>
+										<s:DropShadowFilter distance="1" color="#555555" blurX="1" blurY="1" includeIn="selected"/>
+									</s:filters>
+								</s:Label>
+							</mx:VBox>
+						</s:ItemRenderer>
+					</fx:Component>
+				</s:itemRenderer>				
+			</s:List>
+			<!-- <mx:Tile direction="horizontal" horizontalGap="10" verticalGap="15" color="0x323232" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+				<mx:Repeater id="dashListRep" startingIndex="0">
+					<mx:VBox id="dashboardItemBox" click="{selectItem(event)}" horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="3" paddingRight="3" paddingBottom="3" paddingTop="3">
+						<mx:Image click="{selectItem(event)}" width="100" height="75" source="{DataEngine.getUrl('api/v1/storage/dashboard/'+ String(dashListRep.currentItem.id) +'/snapshot.png?aT='+ Session.AuthToken)}"/>
+						<s:Label click="{selectItem(event)}" text="{String(dashListRep.currentItem.title).substr(0, 15)}" width="100%" fontSize="12" textAlign="center" />
+					</mx:VBox>
+				</mx:Repeater>
+			</mx:Tile> -->
+		</s:Group>
+		<s:HGroup horizontalAlign="right" width="100%" bottom="0">
+			<mx:Button id="cancelBtn" click="{closeMe();}" label="Cancel" fontSize="16" />
+			<mx:Button id="openDashboardBtn" click="{openDashboard(event);}" label="Open" fontSize="16" enabled="{dashboardListGroup.selectedItem != null}" />
+		</s:HGroup>
+	</s:Group>
+</s:Group>

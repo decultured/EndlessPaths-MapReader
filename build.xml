@@ -19,7 +19,12 @@
 			<arg line="-source-path+='${src.dir}'" />
 			<arg line="-source-path+='${lib.dir}'" />
 			<arg line="-output '${deploy.dir}/Main.swf'"/>
+			<arg line="-library-path+=${lib.dir}as3corelib.swc"/>
+			<arg line="-library-path+=${lib.dir}as3base64.swc"/>
+			<arg line="-library-path+=${lib.dir}ObjectHandles-2.0.0008_FLEX4.swc"/>
+			<arg line="-library-path+=${lib.dir}endlesspathsflex4com.swc"/>
 			<arg line="-keep-as3-metadata+=Theme,Savable"/>
+			<arg line="-incremental=false"/>
 			<arg line="${src.dir}/Main/Main.mxml"/>
 		</exec>
 	</target>
@@ -30,6 +35,10 @@
 			<arg line="-debug=false" />
 			<arg line="-source-path '${src.dir}'" />
 			<arg line="-output '${deploy.dir}/Main.swf'"/>
+			<arg line="-library-path+=${lib.dir}as3corelib.swc"/>
+			<arg line="-library-path+=${lib.dir}as3base64.swc"/>
+			<arg line="-library-path+=${lib.dir}ObjectHandles-2.0.0008_FLEX4.swc"/>
+			<arg line="-library-path+=${lib.dir}endlesspathsflex4com.swc"/>
 			<arg line="-keep-as3-metadata+=Theme,Savable"/>
 			<arg line="${src.dir}/Main/Main.mxml"/>
 		</exec>

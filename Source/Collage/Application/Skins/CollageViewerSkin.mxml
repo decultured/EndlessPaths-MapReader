@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		xmlns:clgapp="Collage.Application.*"
+		xmlns:clgappskin="Collage.Application.Skins.*"
+		xmlns:clgdoc="Collage.Document.*"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:ep="com.endlesspaths.components.*"
+		xmlns:DataEngine="Collage.DataEngine.*" >
+    <fx:Metadata>
+        <![CDATA[ 
+        [HostComponent("Collage.Application.CollageViewer")]
+        ]]>
+    </fx:Metadata> 
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+    </s:states>
+	<fx:Script><![CDATA[
+	]]></fx:Script>
+	<s:BorderContainer id="docContainer" backgroundColor="0x555555"
+		borderWeight="0" borderColor="0xffffff" dropShadowVisible="false"
+		left="0" right="0" top="0" bottom="{appStatusBar.height}" borderVisible="false" >
+		<s:Scroller hasFocusableChildren="true" tabEnabled="false" width="100%" height="100%" chromeColor="0xbbbbbb" >
+			<s:Group >
+				<s:layout>
+					<s:BasicLayout />
+				</s:layout>
+				<s:BorderContainer id="viewerPageContainer" 
+					scaleX="{hostComponent.zoom}" scaleY="{hostComponent.zoom}"
+					top="0" left="0" 
+					borderColor="0xffffff" borderWeight="0" borderAlpha="0"
+					dropShadowVisible="true" backgroundColor="{viewerPage.backgroundColor}" 
+					width="{viewerPage.width}" height="{viewerPage.height}" >
+					<clgdoc:Page id="viewerPage"
+						width="{viewerPage.pageWidth}"
+						height="{viewerPage.pageHeight}"
+						clipAndEnableScrolling="true">
+						<clgdoc:layout>
+							<s:BasicLayout />
+						</clgdoc:layout>
+					</clgdoc:Page>
+				</s:BorderContainer>
+			</s:Group>
+		</s:Scroller>
+	</s:BorderContainer>
+	<clgappskin:PopUpViewerToolbar viewerPage="{viewerPage}" viewerApp="{hostComponent}" left="25" right="25" height="62" bottom="{appStatusBar.height + 25}"/>
+	<clgapp:CollageStatusBar id="appStatusBar" width="100%" bottom="0" height="{(hostComponent.statusBarVisible)?18:0}" skinClass="Collage.Application.Skins.CollageStatusBarSkin"/>
+	<s:SkinnableContainer id="popupOverlay" height="100%" width="100%" visible="false" skinClass="Collage.Application.Skins.PopUpOverlay">
+	</s:SkinnableContainer>
+	<s:SkinnableContainer id="welcomeScreen" height="100%" width="100%" visible="false" skinClass="Collage.Application.Skins.PopUpOverlay">
+		<DataEngine:Login id="loginForm" horizontalCenter="0" verticalCenter="0" width="300" height="150"/>
+	</s:SkinnableContainer>
+</s:Skin>

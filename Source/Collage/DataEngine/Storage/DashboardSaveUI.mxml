@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<s:Group
+	width="100%"
+	height="100%"
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	creationComplete="handleCreationComplete();">
+	<fx:Script>
+		<![CDATA[
+			import flash.events.*;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+
+			public static const CLOSED:String = "CLOSED";
+			public static const COMPLETE:String = "COMPLETE";
+
+			public function get Title():String { return titleTxt.text; }
+			public function set Title(title:String):void { titleTxt.text = title; }
+
+			private function handleCreationComplete():void {
+			}
+
+			private function closeMe():void {
+				dispatchEvent(new Event(CLOSED));
+			}
+
+			public function saveClick():void
+			{
+				if(Title == null || Title.length <= 0) {
+					Alert.show("A valid title is required.");
+					return;
+				}
+
+				dispatchEvent(new Event(COMPLETE));
+			}
+
+		]]>
+	</fx:Script>
+	<s:Group id="PageGroup" left="15" right="15" top="15" bottom="15">
+		<s:Label text="Save Dashboard To Cloud" fontWeight="normal" top="0" left="0" fontSize="18" color="#feffaf" />
+		<s:Group top="25" bottom="30" width="100%" clipAndEnableScrolling="true">
+			<mx:Form width="100%" height="100%" defaultButton="{saveBtn}">
+				<mx:FormItem label="Title" width="100%" textAlign="left" required="true" color="#feffaf" fontSize="12">
+					<mx:TextInput id="titleTxt" width="100%" text="" color="#222222" />
+				</mx:FormItem>
+			</mx:Form>
+		</s:Group>
+		<s:HGroup width="100%" bottom="0" textAlign="left" horizontalAlign="right" verticalAlign="middle">
+			<s:Button id="cancelBtn" click="closeMe();" label="Cancel" fontSize="16" color="#333333"/>
+			<s:Button id="saveBtn" click="saveClick();" label="Save" fontSize="16" color="#333333"/>
+		</s:HGroup>
+	</s:Group>
+</s:Group>

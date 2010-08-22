@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:ep="com.endlesspaths.components.*"
+		mouseOver="Show()"
+		mouseOut="Hide()" >
+	<fx:Metadata>
+		[Event(name="complete", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Script><![CDATA[
+		import mx.events.PropertyChangeEvent;
+		import flash.events.*;
+		import Collage.Utilities.Logger.*;
+		import Collage.Application.*;
+		import Collage.Document.*;
+		
+		[Bindable] public var viewerPage:Page;
+		[Bindable] public var viewerApp:CollageViewer;
+		private var _FadeTimer:Timer;
+		
+		private function Show():void
+		{
+			if (_FadeTimer) {
+				_FadeTimer.stop();
+				_FadeTimer.removeEventListener("timer", FadeOutTimerEvent);
+				_FadeTimer = null;
+			}
+
+			currentState = 'visible';
+		}
+		
+		private function Hide():void
+		{
+			if (_FadeTimer) {
+				_FadeTimer.stop();
+				_FadeTimer.removeEventListener("timer", FadeOutTimerEvent);
+			}
+			
+			_FadeTimer = new Timer(1000, 1);
+			_FadeTimer.addEventListener("timer", FadeOutTimerEvent, false, 0, true);
+			_FadeTimer.start();	
+		}
+		
+		public function FadeOutTimerEvent(event:TimerEvent):void
+		{
+			currentState = 'normal';
+		}
+		
+	]]></fx:Script>
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="visible" />
+    </s:states>
+	<s:transitions>
+		<s:Transition fromState="normal" toState="visible">
+			<s:Fade alphaFrom="0" alphaTo="1" target="{toolbarGroup}"/>
+		</s:Transition>
+		<s:Transition fromState="visible" toState="normal">
+			<s:Fade alphaFrom="1" alphaTo="0" target="{toolbarGroup}"/>
+		</s:Transition>
+	</s:transitions>
+	<s:SkinnableContainer backgroundAlpha="0" height="100%" width="100%" backgroundColor="#000000" >
+	<s:SkinnableContainer id="toolbarGroup" alpha="0" height="100%" horizontalCenter="0">
+		<s:Rect width="100%" height="100%" radiusX="10" radiusY="10">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry alpha="0.7" color="#E2E2E2" ratio="0"/>
+					<s:GradientEntry alpha="0.7" color="#B7B7B7" ratio="1"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:HGroup verticalAlign="middle" height="100%" left="25" right="25" gap="15">
+			<ep:ImageButton alpha="0.75" image="@Embed('/Assets/toolbar/view-fullscreen.png')" click="viewerApp.Fullscreen()" skinClass="com.endlesspaths.skins.ImageButtonPlain"/>
+			<ep:ImageButton alpha="0.75" image="@Embed('/Assets/toolbar/zoom-in.png')" click="viewerApp.ZoomIn()" skinClass="com.endlesspaths.skins.ImageButtonPlain"/>
+			<ep:ImageButton alpha="0.75" image="@Embed('/Assets/toolbar/zoom-out.png')" click="viewerApp.ZoomOut()" skinClass="com.endlesspaths.skins.ImageButtonPlain"/>
+			<ep:ImageButton alpha="0.75" image="@Embed('/Assets/toolbar/zoom-original.png')" click="viewerApp.Zoom(1)" skinClass="com.endlesspaths.skins.ImageButtonPlain"/>
+			<ep:ImageButton alpha="0.75" image="@Embed('/Assets/toolbar/zoom-fit-best.png')" click="{viewerApp.fitToScreen = !viewerApp.fitToScreen}" skinClass="com.endlesspaths.skins.ImageButtonPlain"/>
+			<ep:ImageButton image="@Embed('/Assets/toolbar/go-previous.png')" click="viewerApp.pageManager.PrevPage()" skinClass="com.endlesspaths.skins.ImageButtonPlain" visible="{viewerApp.pageManager.numPages > 1}" includeInLayout="{viewerApp.pageManager.numPages > 1}"/>
+			<ep:ImageButton image="@Embed('/Assets/toolbar/go-next.png')" click="viewerApp.pageManager.NextPage()" skinClass="com.endlesspaths.skins.ImageButtonPlain" visible="{viewerApp.pageManager.numPages > 1}" includeInLayout="{viewerApp.pageManager.numPages > 1}"/>
+		</s:HGroup>
+	</s:SkinnableContainer>
+	</s:SkinnableContainer>
+</s:SkinnableContainer>

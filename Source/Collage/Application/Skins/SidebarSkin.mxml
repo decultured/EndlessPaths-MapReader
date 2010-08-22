@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:fb="http://ns.adobe.com/flashbuilder/2009" xmlns:mx="library://ns.adobe.com/flex/mx" width.hidden="24" width.extended="200" currentState="hidden">
+	<fx:Metadata><![CDATA[ 
+		[HostComponent("Collage.Application.CollageSideBar")]
+	]]></fx:Metadata>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="hidden"/>
+		<s:State name="extended"/>
+		<s:State name="disabled"/>
+	</s:states>
+	
+	<fx:Script><![CDATA[
+		import Collage.Utilities.Logger.*;
+		
+		protected function ButtonClickHandler(event:MouseEvent):void
+		{
+			if (showBtn.selected)
+				currentState = "extended";
+			else currentState = "hidden";
+			Logger.Log("CurrentState: "+ currentState, this);
+		}
+		
+		protected function addPageHandler(event:MouseEvent):void
+		{
+			if (!hostComponent.appClass || !hostComponent.appClass.pageManager) return;
+			hostComponent.appClass.SaveCurrentPage();
+			hostComponent.appClass.pageManager.NewPage();
+			removeButton.enabled = (hostComponent.appClass.pageManager.numPages > 1);
+		}
+		
+		protected function removePageHandler(event:MouseEvent):void
+		{
+			if (!hostComponent.appClass || !hostComponent.appClass.pageManager) return;
+			hostComponent.appClass.SaveCurrentPage();
+			hostComponent.appClass.pageManager.RemovePage();
+			removeButton.enabled = (hostComponent.appClass.pageManager.numPages > 1);
+		}
+		
+		protected function copyPageHandler(event:MouseEvent):void
+		{
+			if (!hostComponent.appClass || !hostComponent.appClass.pageManager) return;
+			hostComponent.appClass.SaveCurrentPage();
+			hostComponent.appClass.pageManager.CopyPage();
+			removeButton.enabled = (hostComponent.appClass.pageManager.numPages > 1);
+		}
+	]]></fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	
+	<s:Group id="leftEdge" height="100%" width="100%">
+		<s:layout>
+			<s:BasicLayout/>
+		</s:layout>
+		<s:Rect height="100%" width="100%">
+			<s:fill>
+				<s:LinearGradient rotation="0">
+					<s:GradientEntry alpha="1.0" color="#A5A5A5" ratio="0"/>
+					<s:GradientEntry alpha="1.0" color="#8C8C8C" ratio="1"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:Line top="0" left="0" bottom="0">
+			<s:stroke>
+				<s:SolidColorStroke caps="square" color="#666666" joints="miter" miterLimit="4" weight="4"/>
+			</s:stroke>
+		</s:Line>
+	</s:Group>
+	<s:Group top="0" left="4" bottom="0">
+		<s:layout>
+			<s:VerticalLayout />
+		</s:layout>
+		<s:ToggleButton rotation="-90" id="showBtn" label="PAGES &amp; DATASETS" click="ButtonClickHandler(event)" skinClass="Collage.Application.Skins.SidebarToggleButtonSkin"/>
+	</s:Group>
+	<s:Group left="20" height="100%" visible.hidden="false" visible.extended="true">
+		<s:Rect width="100%" height="100%">
+			<s:fill>
+				<s:SolidColor color="0xFFFFFF" alpha="1.0"/>
+			</s:fill>
+		</s:Rect>
+		<s:List requireSelection="true" dragEnabled="true" dragMoveEnabled="true" dropEnabled="true" width="100%" top="0" bottom="30" selectedIndex="@{hostComponent.appClass.pageManager.currentPageIndex}" dataProvider="{hostComponent.appClass.pageManager.pages}">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer width="100%" height="20" doubleClick="{currentState = 'editing'}" doubleClickEnabled="true">
+						<s:states>
+							<s:State name="normal"/>
+							<s:State name="hovered"/>
+							<s:State name="editing"/>
+							<s:State name="selected"/>
+						</s:states>
+						<fx:Script><![CDATA[
+							override public function set data(value:Object):void {
+								super.data = value;
+								if (data == null) // a renderer's data is set to null when it goes out of view
+									return;
+								txtStart.text = data['displayName'];
+							}
+						]]></fx:Script>
+						<s:Rect top="1" right="1" left="1" bottom="0" radiusX="3" radiusY="3">
+							<s:fill>
+								<s:SolidColor color.normal="#65A3CE" color.hovered="#1d5780" color.selected="#ff9600" color.editing="#ff0000"/>
+							</s:fill>
+						</s:Rect>
+						<s:Group width="100%" height="100%" visible="true" visible.editing="false">
+							<s:Label id="txtStart" color="#FFFFFF" fontWeight="bold" width="100%" verticalCenter="2" left="20"/>
+						</s:Group>
+						<s:Group width="100%" height="100%" visible="false" visible.editing="true">
+							<s:TextInput id="displayLabelInput" text="@{data.displayName}"/>
+						</s:Group>
+					</s:ItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		<s:HGroup horizontalCenter="0" verticalAlign="middle" height="30" bottom="0">
+			<s:Button width="50" id="addButton" label="+" enabled="{(!hostComponent.appClass || !hostComponent.appClass.pageManager) ? false : true}" click="addPageHandler(event)" fontWeight="bold"/>
+			<s:Button width="50" id="removeButton" label="-" enabled="{false}" click="removePageHandler(event)" fontWeight="bold"/>
+			<s:Button width="50" id="copyButton" label="Copy" enabled="{(!hostComponent.appClass || !hostComponent.appClass.pageManager) ? false : true}" click="copyPageHandler(event)" fontWeight="bold"/>
+		</s:HGroup>
+	</s:Group>
+</s:Skin>

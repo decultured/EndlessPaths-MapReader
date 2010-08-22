@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:clgdata="Collage.DataEngine.*"
+		xmlns:clgclip="Collage.Clip.*"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		width="100%" height="100%"
+		>
+	<fx:Script><![CDATA[
+		import mx.events.PropertyChangeEvent;
+		import Collage.Application.*;
+		import Collage.Document.*;
+		import Collage.Utilities.Logger.*;
+		
+		[Bindable]public var appClass:CollageApp;
+
+		private function Complete():void
+		{
+
+		}
+
+		private function Submit():void
+		{
+			if (!appClass || !appClass.editPage)
+				return;
+			
+			appClass.editPage.displayName = pageTitle.text;
+			appClass.editPage.pageWidth = parseInt(pageWidth.text);
+			appClass.editPage.pageHeight = parseInt(pageHeight.text);
+
+			appClass.SaveCurrentPage();
+
+			CollageApp.instance.ClosePopup("pagewizard");
+		}
+	]]></fx:Script>
+    <s:layout>
+        <s:BasicLayout/>
+    </s:layout>
+	<s:Group left="15" right="15" top="15" bottom="15" >
+		<s:Label text="Page Setup" top="0" left="0" fontSize="18" color="#feffaf" />
+		<s:VGroup top="35" width="100%" gap="12">
+			<s:HGroup verticalAlign="middle" >
+				<s:Label text="Title:" color="#feffaf" fontSize="12" width="46" />
+				<s:TextInput id="pageTitle" maxChars="25" width="200" text="{appClass.editPage.displayName}" />
+			</s:HGroup>
+			<s:Line width="100%" >
+				<s:stroke>
+					<s:SolidColorStroke caps="none" color="#525252" joints="miter" miterLimit="4" weight="1"/>
+				</s:stroke>
+			</s:Line>
+			<s:HGroup gap="12" verticalAlign="middle">
+				<s:Label text="Width:" color="#feffaf" fontSize="12" width="40" />
+				<s:TextInput id="pageWidth" maxChars="5" width="50" text="{appClass.editPage.width}" />
+				<s:Label text="Height:" color="#feffaf" fontSize="12" width="40" />
+				<s:TextInput id="pageHeight" maxChars="5" width="50" text="{appClass.editPage.height}" />
+			</s:HGroup>
+		</s:VGroup>
+		<s:HGroup bottom="0" right="0">
+			<s:Button right="0" click="Submit()" label="Submit" />
+		</s:HGroup>
+	</s:Group>
+</s:Group>

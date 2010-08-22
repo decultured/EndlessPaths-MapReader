@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		xmlns:clgapp="Collage.Application.*"
+		xmlns:clgdoc="Collage.Document.*"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:ep="com.endlesspaths.components.*"
+		xmlns:DataEngine="Collage.DataEngine.*" >
+	<fx:Metadata>
+		<![CDATA[ 
+		[HostComponent("Collage.Application.CollageApp")]
+		]]>
+	</fx:Metadata> 
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="disabled" />
+	</s:states>
+
+	<fx:Declarations>
+		<s:BitmapImage id="textPage" source="@Embed('/Assets/components/draw-text.png')" />
+		<s:BitmapImage id="richText" source="@Embed('/Assets/components/text-field.png')" />
+		<s:BitmapImage id="imageClip" source="@Embed('/Assets/components/photo.png')" />
+
+		<s:BitmapImage id="guage"			source="@Embed('/Assets/components/guage.png')" />
+		<s:BitmapImage id="columnChart"		source="@Embed('/Assets/components/office-chart-bar.png')" />
+		<s:BitmapImage id="lineChart"		source="@Embed('/Assets/components/office-chart-line.png')" />
+		<s:BitmapImage id="scatterPlot"		source="@Embed('/Assets/components/office-chart-scatter.png')" />
+		<s:BitmapImage id="pieChart"		source="@Embed('/Assets/components/office-chart-pie.png')" />
+		<s:BitmapImage id="dataLabel"		source="@Embed('/Assets/components/list-add-font.png')" />
+		<s:BitmapImage id="table"			source="@Embed('/Assets/components/insert-table.png')" />
+		<s:BitmapImage id="rss"				source="@Embed('/Assets/components/rss.png')" />
+		<s:BitmapImage id="youtube"			source="@Embed('/Assets/components/youtube.png')" />
+		<s:BitmapImage id="multiseries"		source="@Embed('/Assets/components/multiseries.png')" />
+		<s:BitmapImage id="twitter"			source="@Embed('/Assets/components/twitter.png')" />
+		<s:BitmapImage id="map"				source="@Embed('/Assets/components/map.png')" />
+		<s:BitmapImage id="wordcloud"		source="@Embed('/Assets/components/wordcloud.png')" />
+		<s:BitmapImage id="graph"			source="@Embed('/Assets/components/graph.png')" />
+		
+		<s:ArrayList id="arrComponentList">
+			<fx:Object label="Label" image="{textPage}" componentType="label" />
+			<fx:Object label="Rich Text" image="{richText}" componentType="textbox" />
+			<fx:Object label="Image" image="{imageClip}" componentType="image" />
+
+			<fx:Object label="Column Chart" image="{columnChart}" componentType="columnchart" />
+			<fx:Object label="Line Chart" image="{lineChart}" componentType="linechart" />
+			<fx:Object label="Scatter Plot" image="{scatterPlot}" componentType="scatterplot" />
+			<fx:Object label="Pie Chart" image="{pieChart}" componentType="piechart" />
+			<fx:Object label="Data Label" image="{dataLabel}" componentType="datalabel" />
+			<fx:Object label="Rss Feed" image="{rss}" componentType="rssfeed" />
+			<fx:Object label="Word Cloud" image="{wordcloud}" componentType="wordcloud" />
+			<fx:Object label="Graph" image="{graph}" componentType="graph" />
+			<fx:Object label="Multi Trend" image="{multiseries}" componentType="multiseries" />
+
+			<!-- <fx:Object label="You Tube" image="{youtube}" componentType="youtube" />
+			<fx:Object label="Map" image="{map}" componentType="datalabel" /> -->
+		</s:ArrayList>
+	</fx:Declarations>
+
+	<fx:Script><![CDATA[
+		import Collage.Document.*;
+		import Collage.Clips.*;
+		import Desktop.Application.*;
+		import mx.controls.Alert;
+		import Collage.Clip.*;
+		import Collage.Utilities.Logger.*;
+		import spark.components.DropDownList;
+		import mx.events.ItemClickEvent;
+		
+		protected function ClickHandler(event:MouseEvent):void
+		{
+			if(event && ((event.target is EditPage) || (event.target == docsContainer)))
+				editPage.DeselectAll();
+		}
+		
+		protected function componentList_Init():void {
+			componentList.addEventListener(ItemClickEvent.ITEM_CLICK, componentList_itemClickHandler);
+		}
+		
+		protected function componentList_itemClickHandler(event:ItemClickEvent):void {
+			editPage.AddClipByType(event.item.componentType);
+			backgroundEditorPopup.popUpOpen = false;
+		}
+
+	]]></fx:Script>
+
+	<s:SkinnableContainer id="toolbarContainer" right="0" left="0" top="0" height="{topHalf.height + bottomHalf.height}">
+		<s:Rect width="100%" top="0" bottom="1">
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry alpha="1.0" color="#E2E2E2" ratio="0"/>
+					<s:GradientEntry alpha="1.0" color="#C7C7C7" ratio="1"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:Line width="100%" top="{topHalf.height-1}">
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="#737373" joints="miter" miterLimit="4" weight="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Line width="100%" bottom="0">
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="#737373" joints="miter" miterLimit="4" weight="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Line width="100%" top="{topHalf.height}">
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="#E2E2E2" joints="miter" miterLimit="4" weight="1"/>
+			</s:stroke>
+		</s:Line>
+		<s:Group id="topHalf" top="0" height="56" width="100%" >
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" paddingRight="10" paddingTop="3" paddingBottom="3" gap="15" verticalAlign="middle"/>
+			</s:layout>
+
+			<ep:ImageButton text="Open" image="@Embed('/Assets/icons/document-open.png')" click="hostComponent.OpenFromCloud()" skinClass="com.endlesspaths.skins.ImageButtonPlain" />
+			<ep:ImageButton text="Save" image="@Embed('/Assets/icons/document-save.png')" click="hostComponent.SaveToCloud()" skinClass="com.endlesspaths.skins.ImageButtonPlain" />
+			<ep:ImageButton text="Copy" image="@Embed('/Assets/icons/edit-copy.png')" click="hostComponent.Copy(null)" skinClass="com.endlesspaths.skins.ImageButtonPlain" />
+			<ep:ImageButton text="Paste" image="@Embed('/Assets/icons/edit-paste.png')" click="hostComponent.Paste(null)" skinClass="com.endlesspaths.skins.ImageButtonPlain" />
+
+			<s:Line x="0" xTo="0" y="0" yTo="20" horizontalCenter="0" verticalCenter="0">
+				<s:stroke>
+					<s:SolidColorStroke caps="none" joints="miter" miterLimit="4" weight="1" color="#575757"/>
+				</s:stroke>
+			</s:Line>
+			<s:Group id="toolbar" height="100%" width="100%" >
+				<s:layout>
+					<s:HorizontalLayout verticalAlign="middle"/>
+				</s:layout>
+			</s:Group>
+		</s:Group>
+		<s:Group id="bottomHalf" bottom="0" height="30" width="100%">
+			<s:layout>
+				<s:HorizontalLayout paddingLeft="10" paddingRight="10" paddingTop="3" paddingBottom="3" verticalAlign="middle"/>
+			</s:layout>
+			<s:Group includeInLayout="{editPage.clipOptionsEnabled}" visible="{editPage.clipOptionsEnabled}">
+				<s:layout>
+					<s:HorizontalLayout />
+				</s:layout>
+				<mx:Image visible="{editPage.singleClipSelected}" includeInLayout="{editPage.singleClipSelected}" click="editPage.MoveSelectedBackward()" source="@Embed('/Assets/icons/object-order-lower.png')" />
+				<mx:Image visible="{editPage.singleClipSelected}" includeInLayout="{editPage.singleClipSelected}" click="editPage.MoveSelectedForward()" source="@Embed('/Assets/icons/object-order-raise.png')" />
+				<mx:Image visible="{editPage.singleClipSelected}" includeInLayout="{editPage.singleClipSelected}" click="editPage.MoveSelectedToBack()" source="@Embed('/Assets/icons/object-order-back.png')" />
+				<mx:Image visible="{editPage.singleClipSelected}" includeInLayout="{editPage.singleClipSelected}" click="editPage.MoveSelectedToFront()" source="@Embed('/Assets/icons/object-order-front.png')" />
+
+				<s:Line x="0" xTo="0" y="9" yTo="15" horizontalCenter="0" verticalCenter="0">
+					<s:stroke>
+						<s:SolidColorStroke caps="none" joints="miter" miterLimit="4" weight="1" color="#575757"/>
+					</s:stroke>
+				</s:Line>
+				<mx:Image visible="{editPage.selectedRefreshable}" includeInLayout="{editPage.selectedRefreshable}" click="editPage.RefreshSelected()" source="@Embed('/Assets/icons/refresh-clip.png')" />
+				<mx:Image visible="{editPage.selectedEditable}" includeInLayout="{editPage.selectedEditable}" click="editPage.ToggleEditSelected()" source="@Embed('/Assets/icons/edit.png')" />
+				<mx:Image click="editPage.DeleteSelected()" source="@Embed('/Assets/icons/delete.png')" />
+				<s:Line x="0" xTo="0" y="9" yTo="15" horizontalCenter="0" verticalCenter="0">
+					<s:stroke>
+						<s:SolidColorStroke caps="none" joints="miter" miterLimit="4" weight="1" color="#575757"/>
+					</s:stroke>
+				</s:Line>
+			</s:Group>
+			<s:Group id="smallToolbar" >
+				<s:layout>
+					<s:HorizontalLayout/>
+				</s:layout>
+			</s:Group>
+		</s:Group>
+	</s:SkinnableContainer>
+	
+	<s:BorderContainer id="docContainer" backgroundColor="0x555555"
+		borderWeight="0" borderColor="0xffffff" dropShadowVisible="false"
+		left="0" right="{collageSideBar.width}" top="{toolbarContainer.height}" bottom="{appStatusBar.height}" borderVisible="false" click="ClickHandler(event);">
+		<s:Scroller hasFocusableChildren="true" tabEnabled="false" width="100%" height="100%" chromeColor="0xbbbbbb">
+			<s:Group id="docsContainer" >
+			<s:Group width="{(hostComponent.fitToScreen)?editPage.width:editPage.width + 50}" height="{(hostComponent.fitToScreen)?editPage.height:editPage.height + 50}" >
+				<s:layout>
+					<s:BasicLayout />
+				</s:layout>
+				<s:BorderContainer id="editPageContainer"
+					scaleX="{hostComponent.zoom}" scaleY="{hostComponent.zoom}"
+					top="{(hostComponent.fitToScreen)?0:25}" left="{(hostComponent.fitToScreen)?0:25}"
+					borderColor="0xffffff" borderWeight="0" borderAlpha="0"
+					dropShadowVisible="true" backgroundColor="{editPage.backgroundColor}"
+					width="{editPage.width}" height="{editPage.height}" >
+					<s:layout>
+						<s:BasicLayout />
+					</s:layout>
+					<clgapp:Grid id="appGrid" visible="false" left="0" right="0" top="0" bottom="0" maxWidth="{editPage.width}" maxHeight="{editPage.height}" />
+					<clgdoc:EditPage id="editPage"
+						width="{editPage.pageWidth}"
+						height="{editPage.pageHeight}"
+						click="ClickHandler(event);"
+						creationComplete="editPage.InitializeForEdit();"
+						clipAndEnableScrolling="true"
+						appClass="{hostComponent}"
+						toolbar="{toolbar}"
+						smallToolbar="{smallToolbar}">
+						<clgdoc:layout>
+							<s:BasicLayout />
+						</clgdoc:layout>
+					</clgdoc:EditPage>
+					<!--
+					<s:Group width="100%" height="100%">
+						<s:Path winding="nonZero" data="M{editDoc.width} {editDoc.height}
+														0 {editDoc.height}
+														0 0
+														{editDoc.width} 0
+														{editDoc.width} {editDoc.height}
+														ZM52.4556 25.1177
+														18.2974 37.7788
+														39.873 76.3315
+														74.0312 63.6709
+														52.4556 25.1177Z">
+							<s:fill>
+								<s:SolidColor color="#000000" alpha="0.1"/>
+							</s:fill>
+						</s:Path>
+					</s:Group>
+					-->
+				</s:BorderContainer>
+			</s:Group>
+		</s:Group>
+		</s:Scroller>
+	</s:BorderContainer>
+
+	<clgapp:CollageSideBar id="collageSideBar" appClass="{hostComponent}" right="0" top="{toolbarContainer.height}" bottom="{appStatusBar.height}" skinClass="Collage.Application.Skins.CollageSideBarSkin" />
+
+	<s:Group bottom="{appStatusBar.height + 20}" left="10">
+		<s:Graphic click="backgroundEditorPopup.popUpOpen = !backgroundEditorPopup.popUpOpen;" toolTip="Select a Component">
+			<s:Ellipse height="30" width="30" x="0" y="0">
+				<s:fill>
+					<s:SolidColor alpha="0.5"/>
+				</s:fill>
+				<s:stroke>
+					<s:SolidColorStroke caps="none" alpha="0.75" color="#FFFFFF" joints="miter" miterLimit="4" weight="1"/>
+				</s:stroke>
+				<s:filters>
+					<s:DropShadowFilter alpha="0.5" quality="3"/>
+				</s:filters>
+			</s:Ellipse>
+			
+			<s:Group alpha="0.75" x="6" y="6">
+				<s:Line x="9.5" y="1.5" yTo="16">
+					<s:stroke>
+						<s:SolidColorStroke color="#FFFFFF" joints="miter" miterLimit="4" weight="3"/>
+					</s:stroke>
+				</s:Line>
+				<s:Line x="1.5" xFrom="16" y="9.5">
+					<s:stroke>
+						<s:SolidColorStroke color="#FFFFFF" joints="miter" miterLimit="4" weight="3"/>
+					</s:stroke>
+				</s:Line>
+			</s:Group>
+		</s:Graphic>
+		<ep:AutoPopUpAnchor id="backgroundEditorPopup" displayPopUp="false" popUpPosition="above" enabled="true" bottom="32">
+			<ep:CalloutPanel id="backgroundEditorPanel" skinClass="com.endlesspaths.skins.CalloutPanelBlackHUDSkin" arrowPosition="bottom" title="Components">
+				<s:List id="componentList" initialize="componentList_Init()" dataProvider="{arrComponentList}" itemRenderer="com.endlesspaths.skins.TiledImageItemRenderer" contentBackgroundAlpha="0.0" color="#FFFFFF" borderVisible="false" width="100%">
+					<s:layout>
+						<s:TileLayout horizontalGap="8" verticalGap="8" requestedColumnCount="5" />
+					</s:layout>
+				</s:List>
+			</ep:CalloutPanel>
+		</ep:AutoPopUpAnchor>
+	</s:Group>
+	
+	<s:HGroup visible="{hostComponent.pageManager.numPages > 1}" bottom="{appStatusBar.height + 20}" right="{collageSideBar.width + 20}" >
+		<mx:Image click="hostComponent.pageManager.PrevPage()" toolTip="Previous Page" source="@Embed('/Assets/icons/go-previous.png')" />
+		<mx:Image click="hostComponent.pageManager.NextPage()" toolTip="Next Page" source="@Embed('/Assets/icons/go-next.png')" />
+	</s:HGroup>
+	<clgapp:CollageStatusBar id="appStatusBar" width="100%" bottom="0" height="{(hostComponent.statusBarVisible)?18:0}" skinClass="Collage.Application.Skins.CollageStatusBarSkin"/>
+	<s:SkinnableContainer id="popupOverlay" height="100%" width="100%" visible="false" skinClass="Collage.Application.Skins.PopUpOverlay">
+	</s:SkinnableContainer>
+	<s:SkinnableContainer id="welcomeScreen" height="100%" width="100%" visible="true" skinClass="Collage.Application.Skins.PopUpOverlay">
+		<DataEngine:Login id="loginForm" horizontalCenter="0" verticalCenter="0" width="350" height="150"/>
+	</s:SkinnableContainer>
+</s:Skin>

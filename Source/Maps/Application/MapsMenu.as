@@ -67,7 +67,7 @@ package Maps.Application
 				case "openshp":		mapsApp.OpenSHPFile();	break;
 				case "opendbf":		mapsApp.OpenDBFFile();	break;
 				case "run":			mapsApp.RunImporter();	break;
-				case "new": 		mapsApp.mapView.New(); mapsApp.shapeReader.Reset(); break;
+				case "new": 		mapsApp.mapClip.New(); mapsApp.shapeReader.Reset(); break;
 				case "save":		mapsApp.SaveFile();	break;
 				case "savelog":		mapsApp.SaveLogFile();	break;
 				default:

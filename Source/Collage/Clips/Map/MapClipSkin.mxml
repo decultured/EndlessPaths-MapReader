@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+		xmlns:clg="Collage.Clip.*"
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		creationComplete="CreationCompleteHandler(event)">
+	<fx:Metadata>
+		<![CDATA[ 
+		[HostComponent("Collage.Clip.ClipView")]
+		]]>
+	</fx:Metadata> 
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="editing" />
+		<s:State name="disabled" />
+	</s:states>
+	<fx:Declarations>
+		<s:SolidColorStroke id="polyBorderStroke" color="{hostComponent.model.objectBorderColor}" alpha="{hostComponent.model.objectBorderAlpha}" weight="{hostComponent.model.objectBorderWeight / hostComponent.model.scaleAmount}" />
+		<s:SolidColorStroke id="polylineStroke" color="{hostComponent.model.lineColor}" alpha="{hostComponent.model.lineAlpha}" weight="{hostComponent.model.lineWeight / hostComponent.model.scaleAmount}" />
+	</fx:Declarations>
+	<fx:Script><![CDATA[
+		import mx.events.PropertyChangeEvent;
+		import mx.events.FlexEvent;
+		import mx.events.CollectionEvent;
+		import mx.events.CollectionEventKind;
+		import mx.collections.ArrayList;
+		import Collage.Clips.*;
+		
+		protected function CreationCompleteHandler(event:FlexEvent):void
+		{
+			ModelChanged(null);
+			hostComponent.model.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, ModelChanged, false, 0, true);
+			(hostComponent.model.objects as ArrayList).addEventListener(CollectionEvent.COLLECTION_CHANGE, ObjectsChanged, false, 0, true);
+		}
+
+		protected function ObjectsChanged(event:CollectionEvent):void
+		{
+			if (!event) return;
+			
+			var idx:uint = 0;
+			
+			switch (event.kind) {
+				case CollectionEventKind.ADD:
+					if (!event.items || !event.items.length) return;
+					for (idx = 0; idx < event.items.length; idx++) {
+						if (!event.items[idx] is MapPolygon)
+							continue;
+						AddObject(event.items[idx] as MapPolygon);
+					}					
+					break;
+				case CollectionEventKind.REMOVE:
+					if (!event.items || !event.items.length) return;
+					for (idx = 0; idx < event.items.length; idx++) {
+						hostComponent.removeElement(event.items[idx]);
+					}					
+					break;
+				case CollectionEventKind.REPLACE:
+					break;
+				case CollectionEventKind.MOVE:
+					break;
+				case CollectionEventKind.RESET:
+				case CollectionEventKind.UPDATE:
+				case CollectionEventKind.REFRESH:
+					break;
+			}
+			
+		}
+
+		protected function AddObject(mapPoly:MapPolygon):void
+		{
+			if (!mapPoly) return;
+			
+			mapPoly.polyBorderStroke = polyBorderStroke;
+			hostComponent.addElement(mapPoly);
+		}
+
+		protected function ModelChanged(event:PropertyChangeEvent):void
+		{
+			if (event && event.property != "x" && event.property != "y" && event.property != "width" && event.property != "height")
+			{
+			}
+		}
+	]]></fx:Script>
+	<s:layout>
+		<s:BasicLayout clipAndEnableScrolling="true"/>
+	</s:layout>
+	<clg:ClipBackground model="{hostComponent.model}" editing="{currentState=='editing'}" skinClass="Collage.Clip.Skins.ClipBackgroundSkin" width="100%" height="100%">
+		<!-- <s:Rect width="100%" height="100%" visible="{!hostComponent.model.query.loaded}" >
+			<s:fill>
+				<s:LinearGradient rotation="90">
+					<s:GradientEntry alpha="0.5" color="#E2E2E2" ratio="0"/>
+					<s:GradientEntry alpha="0.5" color="#B7B7B7" ratio="1"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:VGroup horizontalAlign="center" horizontalCenter="0" verticalCenter="0" visible="{!hostComponent.model.query.loaded}" >
+			<s:BitmapImage id="errorImg" source="@Embed('/Assets/icons/48cancel.png')" minWidth="5" minHeight="5" />
+			<s:Label text="No data has been set." color="#222222" maxDisplayedLines="1" fontWeight="bold" fontSize="12" textAlign="center" />
+		</s:VGroup> -->
+		<s:Group id="contentGroup" width="10000" height="10000" scaleX="{hostComponent.model.scaleX}" scaleY="{hostComponent.model.scaleY}" minWidth="0" minHeight="0">
+		</s:Group>
+	</clg:ClipBackground>	
+</s:Skin>

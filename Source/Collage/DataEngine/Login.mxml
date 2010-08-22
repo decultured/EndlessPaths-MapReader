@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<s:Group width="100%" height="100%"
+			xmlns:fx="http://ns.adobe.com/mxml/2009"
+			xmlns:s="library://ns.adobe.com/flex/spark" 
+			xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+			xmlns:mx="library://ns.adobe.com/flex/mx" 
+			creationComplete="handleCreationComplete();" >
+	<fx:Script>
+		<![CDATA[
+			import flash.events.*;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			private function handleCreationComplete():void {
+				authMsg.text = "";
+				
+				Session.events.addEventListener(Session.LOGIN_FAILURE, Login_Failure);
+			}
+			
+			private function processLogin():void {
+				Session.Login(email_address.text, password.text);
+			}
+			
+			private function Login_Failure(event:Event):void {
+				authMsg.text = "Login failed, please try again.";
+			}
+		]]>
+	</fx:Script>
+    <s:Rect id="backgroundRect" 
+		width="100%" height="100%"
+		radiusX="7" radiusY="7" >
+        <s:fill>
+            <s:SolidColor id="backgroundFill" color="#222222" alpha="0.95"/>
+        </s:fill>
+    </s:Rect>
+	<mx:Form width="100%" defaultButton="{loginBtn}" bottom="50">
+		<mx:FormItem label="E-Mail Address" width="100%" textAlign="left" fontSize="14" color="#eeeeee" required="true">
+			<s:TextInput id="email_address" width="100%" text="" color="#444444"/>
+		</mx:FormItem>
+		<mx:FormItem label="Password" width="100%" color="#eeeeee" fontSize="14" required="true">
+			<s:TextInput id="password" displayAsPassword="true" width="100%" color="#444444"/>
+		</mx:FormItem>
+	</mx:Form>
+	<s:HGroup width="100%" bottom="20" left="20" right="20" textAlign="left" horizontalAlign="right" verticalAlign="middle">
+		<mx:Label text="Authentication failed message here." width="100%" textAlign="left" color="#de0d0d" fontWeight="bold" fontSize="14" id="authMsg"/>
+		<mx:Button id="loginBtn" click="processLogin();" label="Login"	textAlign="center" fontSize="16" color="#333333"/>
+	</s:HGroup>
+</s:Group>

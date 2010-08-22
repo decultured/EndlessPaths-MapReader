@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009" >
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+    </s:states>
+    <fx:Metadata>
+        <![CDATA[
+        	[HostComponent("Collage.Application.CollageStatusBar")]
+        ]]>
+    </fx:Metadata>
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:LinearGradient rotation="90">
+				<s:GradientEntry alpha="1.0" color="#C7C7C7" ratio="0"/>
+				<s:GradientEntry alpha="1.0" color="#A2A2A2" ratio="1"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	<s:Group width="100%" height="100%">
+		<s:layout>
+			<s:HorizontalLayout verticalAlign="middle" paddingLeft="10" />
+		</s:layout>
+		<s:Label text="{hostComponent.message}" color="{hostComponent.messageColor}" fontSize="10" fontWeight="bold" maxWidth="800" lineBreak="explicit"/>
+	</s:Group>
+</s:Skin>

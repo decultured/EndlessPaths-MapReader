@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<clgwiz:DataClipWizardPage xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		xmlns:clgwiz="Collage.Clip.DataClipWizard.*" >
+	<fx:Script><![CDATA[
+		import Collage.Utilities.Logger.*;
+		import Collage.Application.*;
+		import Collage.DataEngine.*;
+		import spark.events.IndexChangeEvent;
+		import mx.collections.ArrayList;
+		
+		[Bindable]public var dataQueryField:DataQueryField = null;
+		[Bindable]public var fieldDef:QueryFieldDefinition = null;
+
+		[Bindable]public var queryFields:ArrayList;
+
+		[Bindable]public var allowModifiers:Boolean = false;
+		[Bindable]public var groupAllowed:Boolean = false;
+		[Bindable]public var allowDateTimeGrouping:Boolean = false;
+		
+		private function handleCreationComplete():void {
+		}
+		
+		public override function Save():void
+		{
+			if (!columnsList.selectedItem || !dataQueryField) {
+				complete = false;
+				return;
+			}
+			
+			if (modifierList.selectedItem)
+				dataQueryField.modifier = modifierList.selectedItem.data;
+			
+			dataQueryField.isGrouped = groupCheckbox.selected;
+			if (allowDateTimeGrouping && datetimeGroupingList.selectedIndex > -1) {
+				dataQueryField.group = datetimeGroupingList.selectedItem.data;
+			}
+
+			dataQueryField.columnID = columnsList.selectedItem["columnID"];
+			
+			Logger.Log("Column Set: " + dataQueryField.columnID + " internalName: " + dataQueryField.internalName + " Modifier: " + dataQueryField.modifier + " Grouped: " + dataQueryField.isGrouped, this);	
+		}
+		
+		public override function Reset():void
+		{
+			super.Reset();
+			
+			if (queryDefinition && queryDefinition.fieldDefinitions && queryDefinition.fieldDefinitions.length > columnIndex)
+				fieldDef = queryDefinition.fieldDefinitions.getItemAt(columnIndex) as QueryFieldDefinition;
+			if (queryDefinition.fieldDefinitions.length - 1 == columnIndex)
+				canSubmit = true;
+				
+			if (!query || !fieldDef) {
+				queryFields = null;
+				return;
+			}
+
+			title = fieldDef.title + " Selection";
+			
+			dataQueryField = query.FindFieldByInternalName(fieldDef.internalName);
+			if (!dataQueryField) {
+				dataQueryField = new DataQueryField()
+				dataQueryField.internalName = fieldDef.internalName;
+				dataQueryField.columnID = null;
+				dataQueryField.modifier = null;
+				dataQueryField.isGrouped = fieldDef.grouped;
+				query.AddField(dataQueryField);
+			}
+
+			queryFields = query.GetColumnSelectionsArrayList(fieldDef.allowedTypes, fieldDef.internalName);
+
+			groupAllowed = (fieldDef.groupable && !query.GroupFieldExists(fieldDef.internalName));
+			groupCheckbox.selected = dataQueryField.isGrouped;
+			groupCheckbox.visible = groupAllowed;
+			groupCheckbox.includeInLayout = groupAllowed;
+
+			if (dataQueryField.columnID) {
+				for (var i:int = 0; i < queryFields.length; i++)
+				{
+					if (queryFields.getItemAt(i)["columnID"] == dataQueryField.columnID) {
+						columnsList.selectedIndex = i;
+						complete = true;
+						break;
+					}
+				}
+			}
+			
+			allowModifiers = (fieldDef.allowModifiers || query.GroupFieldExists(fieldDef.internalName) || queryDefinition.fieldDefinitions.length == 1);
+			modifierList.dataProvider = DataEngine.modifierSelections;
+			modifierList.visible= allowModifiers;
+			modifierList.includeInLayout= allowModifiers;
+
+			if (dataQueryField.modifier) {
+				for (i = 0; i < DataEngine.modifierSelections.length; i++)
+				{
+					if (DataEngine.modifierSelections.getItemAt(i)["data"] == dataQueryField.modifier) {
+						modifierList.selectedIndex = i;
+						break;
+					}
+				}
+			}
+			
+			AdjustDateTimeGrouping(dataQueryField.columnID);
+		}
+		
+		private function SelectionChanged():void
+		{
+			if (columnsList.selectedIndex < 0) {
+				complete = false;
+				return;
+			}
+			
+			var selectedObject:Object = queryFields.getItemAt(columnsList.selectedIndex) as Object;
+			
+			if (selectedObject["dataTypeAllowed"]) {
+				complete = true;
+				dataQueryField.columnID = columnsList.selectedItem["columnID"];
+			} else {
+				complete = false;
+				columnsList.selectedItem = null;
+			}
+			
+			AdjustDateTimeGrouping(dataQueryField.columnID);
+		}
+		
+		private function AdjustDateTimeGrouping(columnID:String):void {
+			if (!columnID && columnsList.selectedItem)
+				columnID = dataQueryField.columnID;
+
+			if (query.dataset)
+				var dataSet:DataSet = DataEngine.GetDataSetByID(query.dataset);
+			if (dataSet && columnID)
+				var dataSetColumn:DataSetColumn = dataSet.GetColumnByID(columnID);
+			
+			allowDateTimeGrouping = (groupCheckbox.selected && dataSetColumn && dataSetColumn.datatype == "datetime");
+			datetimeGroupingList.visible= allowDateTimeGrouping;
+			datetimeGroupingList.includeInLayout= allowDateTimeGrouping;
+
+			if (allowDateTimeGrouping) {
+				datetimeGroupingList.dataProvider = DataEngine.datetimeGrouping;
+				if (dataQueryField.group) {
+					for (var i:uint = 0; i < DataEngine.datetimeGrouping.length; i++)
+					{
+						if (DataEngine.datetimeGrouping.getItemAt(i)["data"] == dataQueryField.group) {
+							datetimeGroupingList.selectedIndex = i;
+							break;
+						}
+					}
+				}
+			} else if (dataQueryField.isGrouped) {
+				dataQueryField.group = "val";
+			}
+		}
+	]]></fx:Script>
+	<s:VGroup height="100%" width="100%">
+		<s:HGroup gap="10">
+		 	<s:CheckBox id="groupCheckbox" label="Group this item " color="#feffaf" change="AdjustDateTimeGrouping(null)" />
+			<s:DropDownList id="modifierList" includeInLayout="false" visible="false" alternatingItemColors="[#EEEEEE,#ffffff]" width="150" prompt="Select a modifier" />
+			<s:DropDownList id="datetimeGroupingList" includeInLayout="false" visible="false" alternatingItemColors="[#EEEEEE,#ffffff]" width="150" prompt="Date Grouping Method" />
+		</s:HGroup>
+		<s:List id="columnsList" contentBackgroundColor="#dee4ea" requireSelection="false" borderVisible="false" height="100%" width="100%" dataProvider="{queryFields}" change="SelectionChanged()" doubleClick="FinishAndProceed()" doubleClickEnabled="true">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer focusRect="false" width="100%" height="25" >
+						<s:states>
+							<s:State name="normal"/>
+							<s:State name="hovered"/>
+							<s:State name="editing"/>
+							<s:State name="selected"/>
+						</s:states>
+						<fx:Script><![CDATA[
+							import Collage.Utilities.Logger.*;
+							import Collage.Application.*;
+					
+							override public function set data(value:Object):void {
+								super.data = value;
+								if (data == null) // a renderer's data is set to null when it goes out of view
+									return;
+								
+								autoDrawBackground = (data.dataTypeAllowed&&!data.used);
+								
+								var columnUsed:Boolean = (data.dataTypeAllowed && data.used);
+								var columnNotAllowed:Boolean = (!data.dataTypeAllowed);
+								
+								typeNotAllowedLabel.visible = typeNotAllowedLabel.includeInLayout = columnNotAllowed;
+								typeUsedLabel.visible = typeUsedLabel.includeInLayout = columnUsed;
+							}
+						]]></fx:Script>
+						
+						<s:Rect width="100%" top="0" bottom="0" includeIn="selected">
+							<s:fill>
+								<s:LinearGradient rotation="90">
+									<s:GradientEntry alpha="1.0" color="#b0bed7" ratio="0"/>
+									<s:GradientEntry alpha="1.0" color="#8295b7" ratio="1"/>
+								</s:LinearGradient>
+							</s:fill>
+						</s:Rect>
+						<s:Line width="100%" top="0" includeIn="selected">
+							<s:stroke>
+								<s:SolidColorStroke caps="none" color="#a2b0cb" weight="1"/>
+							</s:stroke>
+						</s:Line>
+						<s:Group left="10" right="10" height="100%">
+							<s:layout>
+								<s:HorizontalLayout verticalAlign="middle"/>
+							</s:layout>
+							<s:Label id="titleText" text="{data.columnName}" color="{(!data.dataTypeAllowed)?0xa2a2a2:0x222222}" color.selected="#ffffff" maxDisplayedLines="1" fontWeight="bold" fontSize="12">
+								<s:filters>
+									<s:DropShadowFilter distance="1" color="#555555" blurX="1" blurY="1" includeIn="selected"/>
+								</s:filters>
+							</s:Label>
+							<s:Label id="typeNotAllowedLabel" visible="false" includeInLayout="false" text="Datatype not allowed" color="#f2941b" maxDisplayedLines="1" fontSize="10" />
+							<s:Label id="typeUsedLabel" visible="false" includeInLayout="false" text="Column already used for this chart" color="#a2a2a2" maxDisplayedLines="1" fontSize="10" />
+							<s:Label id="typeText" text="{data.dataType}" color="{(!data.dataTypeAllowed)?0xa2a2a2:0x555555}" color.selected="#ffffff" maxDisplayedLines="1" fontSize="10" width="100%" textAlign="end"/>
+						</s:Group>
+					</s:ItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+	</s:VGroup>
+</clgwiz:DataClipWizardPage>

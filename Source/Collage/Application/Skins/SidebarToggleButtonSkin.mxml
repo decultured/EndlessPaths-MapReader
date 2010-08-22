@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" 
+    xmlns:fb="http://ns.adobe.com/flashbuilder/2009" minWidth="21" minHeight="21" alpha.disabledStates="0.5">
+
+    <!-- host component -->
+    <fx:Metadata>
+    <![CDATA[
+        [HostComponent("spark.components.ToggleButton")]
+    ]]>
+    </fx:Metadata>
+    
+    <!-- states -->
+    <s:states>
+        <s:State name="up" />
+        <s:State name="over" stateGroups="overStates" />
+        <s:State name="down" stateGroups="downStates" />
+        <s:State name="disabled" stateGroups="disabledStates" />
+        <s:State name="upAndSelected" stateGroups="selectedStates, selectedUpStates" />
+        <s:State name="overAndSelected" stateGroups="overStates, selectedStates" />
+        <s:State name="downAndSelected" stateGroups="downStates, selectedStates" />
+        <s:State name="disabledAndSelected" stateGroups="selectedUpStates, disabledStates, selectedStates" />
+    </s:states>
+    
+    <s:Group id="fill" left="0" right="0" top="0" bottom="0">
+		<s:Rect includeIn="up, over, down, disabled" height="100%" width="100%">
+			<s:fill>
+				<s:LinearGradient rotation="-90">
+					<s:GradientEntry alpha="1" color="#FFFFFF" ratio="0"/>
+					<s:GradientEntry alpha="1.0" color="#EDEDED" ratio="1"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:Rect includeIn="upAndSelected, overAndSelected, downAndSelected, disabledAndSelected" height="100%" width="100%">
+			<s:fill>
+				<s:LinearGradient rotation="-90">
+					<s:GradientEntry alpha="1.0" color="#E8E8E8" ratio="0"/>
+					<s:GradientEntry alpha="1.0" color="#B5B5B5" ratio="1.0"/>
+				</s:LinearGradient>
+			</s:fill>
+		</s:Rect>
+		<s:Line includeIn="up, over, down, disabled" bottom="0" left="0" right="0">
+			<s:stroke>
+				<s:SolidColorStroke caps="square" color="#2E2E2E" joints="miter" miterLimit="4" weight="1"/>
+			</s:stroke>
+		</s:Line>
+	</s:Group>
+	<s:Line left="0" top="0" bottom="0">
+		<s:stroke>
+			<s:SolidColorStroke caps="none" color="#2E2E2E" joints="miter" miterLimit="4" weight="1"/>
+		</s:stroke>
+	</s:Line>
+	<s:Line right="0" top="0" bottom="0">
+		<s:stroke>
+			<s:SolidColorStroke caps="none" color="#2E2E2E" joints="miter" miterLimit="4" weight="1"/>
+		</s:stroke>
+	</s:Line>
+    
+    <!-- layer 8: text -->
+    <!--- @copy spark.components.supportClasses.ButtonBase#labelDisplay -->
+    <s:Label id="labelDisplay"
+             textAlign="center"
+             verticalAlign="middle"
+             maxDisplayedLines="1"
+             horizontalCenter="0" verticalCenter="1"
+             left="10" right="10" top="2" bottom="2">
+    </s:Label>
+    
+</s:SparkSkin>

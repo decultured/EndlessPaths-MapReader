@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		width="100%" height="100%"
+		backgroundImage="@Embed(source='../../assets/WelcomeScreenBG.swf')"
+		backgroundSize="100%" xmlns:DataEngine="Collage.DataEngine.*">
+	<mx:Canvas backgroundImage="@Embed(source='../../assets/WelcomeScreenText.swf')" backgroundSize="100%" width="673" height="239" horizontalCenter="0" verticalCenter="-179"/>
+<DataEngine:Login id="loginForm"  horizontalCenter="0" verticalCenter="0"/>
+</mx:Canvas>

@@ -5,7 +5,7 @@
 	<use-network>true</use-network>
 	<compiler>
 		<debug>true</debug>
-		<incremental>true</incremental>
+		<incremental>false</incremental>
 		<optimize>true</optimize>
 		<omit-trace-statements>false</omit-trace-statements>
 		<keep-generated-actionscript>false</keep-generated-actionscript>

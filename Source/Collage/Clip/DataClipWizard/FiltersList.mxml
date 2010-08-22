@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:List xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+        xmlns:fb="http://ns.adobe.com/flashbuilder/2009"
+	    xmlns:mx="library://ns.adobe.com/flex/mx"
+		requireSelection="false"
+		contentBackgroundColor="#dee4ea"
+		borderVisible="false"
+		dataProvider="{dataQuery.filters}"
+		dragEnabled="true"
+		dragMoveEnabled="true"
+		dropEnabled="true"
+		creationComplete="Reset()">
+	<fx:Script><![CDATA[
+		import Collage.Utilities.Logger.*;
+		import Collage.DataEngine.*;
+		import flash.events.Event;
+		import mx.collections.ArrayList;
+	
+		[Bindable]public var dataQuery:DataQuery = null;
+		[Bindable]public var queryFields:ArrayList;
+		
+		
+		public function Reset():void {
+			
+		}
+		
+	]]></fx:Script>
+	<s:itemRenderer>
+		<fx:Component>
+			<s:ItemRenderer focusRect="false" width="100%" height="35">
+				<s:states>
+					<s:State name="normal"/>
+					<s:State name="hovered"/>
+					<s:State name="editing"/>
+					<s:State name="selected"/>
+				</s:states>
+				<fx:Script><![CDATA[
+					import Collage.Utilities.Logger.*;
+					import Collage.DataEngine.*;
+					import flashx.textLayout.formats.*;
+			
+					override public function set data(value:Object):void {
+						super.data = value;
+						if (data == null) // a renderer's data is set to null when it goes out of view
+							return;
+					
+						SetBooleanTypeText();
+						
+						var i:uint = 0;
+						
+						columnSelector.dataProvider = outerDocument.queryFields;
+						if (data.columnID) {
+							for (i = 0; i < outerDocument.queryFields.length; i++)
+							{
+								if (outerDocument.queryFields.getItemAt(i)["columnID"] == data.columnID) {
+									columnSelector.selectedIndex = i;
+									break;
+								}
+							}
+						}
+						
+						modifierSelector.dataProvider = DataEngine.filterTypeSelections;
+						if (data.modifier) {
+							for (i = 0; i < DataEngine.filterTypeSelections.length; i++)
+							{
+								if (DataEngine.filterTypeSelections.getItemAt(i)["data"] == data.modifier) {
+									modifierSelector.selectedIndex = i;
+									break;
+								}
+							}
+						}
+					}
+			
+					public function SetBooleanTypeText():void {
+						if (itemIndex) {
+							if (data['isAnd'])
+								booleanTypeText.text = "And";
+							else if (itemIndex && !data['isAnd'])
+								booleanTypeText.text = "Or";
+						} else {
+							booleanTypeText.text = "Where";
+						}
+					}
+			
+					public function ChangeBooleanType():void {
+						data.isAnd = !data.isAnd;
+						SetBooleanTypeText();
+					}
+			
+					public function DropDownChanged():void {
+						if (columnSelector.selectedItem)
+							data.columnID = columnSelector.selectedItem["columnID"];
+						if (modifierSelector.selectedItem)
+							data.modifier = modifierSelector.selectedItem["data"];
+					}
+			
+					public function DeleteItem():void {
+						outerDocument.dataProvider.removeItemAt(itemIndex);
+					}
+				]]></fx:Script>
+				<s:Rect width="100%" top="0" bottom="0" includeIn="selected">
+					<s:fill>
+						<s:LinearGradient rotation="90">
+							<s:GradientEntry alpha="1.0" color="#b0bed7" ratio="0"/>
+							<s:GradientEntry alpha="1.0" color="#8295b7" ratio="1"/>
+						</s:LinearGradient>
+					</s:fill>
+				</s:Rect>
+				<s:Line width="100%" top="0" includeIn="selected">
+					<s:stroke>
+						<s:SolidColorStroke caps="none" color="#a2b0cb" weight="1"/>
+					</s:stroke>
+				</s:Line>
+				<s:HGroup left="5" width="100%" height="100%" verticalAlign="middle" >
+					<s:Label id="booleanTypeText" color="{(!itemIndex)?0x222222:0x2222ff}" color.selected="{(!itemIndex)?0xffffff:0x2222ff}" textDecoration="{(!itemIndex)?TextDecoration.NONE:TextDecoration.UNDERLINE}" maxDisplayedLines="1" fontWeight="bold" fontSize="12" width="40" textAlign="right" click="ChangeBooleanType()">
+						<s:filters>
+							<s:DropShadowFilter distance="1" color="#555555" blurX="1" blurY="1" includeIn="selected"/>
+						</s:filters>
+					</s:Label>
+					<s:DropDownList id="columnSelector" prompt="Select..." width="115" labelField="columnName" change="DropDownChanged()"/>
+					<s:Label text="is" color="#222222" color.selected="#ffffff" maxDisplayedLines="1" fontWeight="bold" fontSize="12">
+						<s:filters>
+							<s:DropShadowFilter distance="1" color="#555555" blurX="1" blurY="1" includeIn="selected"/>
+						</s:filters>
+					</s:Label>
+					<s:DropDownList id="modifierSelector" requireSelection="true" width="145" labelField="label" change="DropDownChanged()"/>
+					<s:TextInput maxChars="5" width="60" text="@{data.value}" />
+					<mx:Image click="DeleteItem()" source="@Embed('/Assets/icons/delete.png')" />
+				</s:HGroup>
+			</s:ItemRenderer>
+		</fx:Component>
+	</s:itemRenderer>
+</s:List>

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:fb="http://ns.adobe.com/flashbuilder/2009" 
+		xmlns:mx="library://ns.adobe.com/flex/mx"
+		 xmlns:ep="com.endlesspaths.components.*"
+		width.hidden="18" width.extended="200"
+		currentState="hidden" >
+	<s:states>
+		<s:State name="normal" />
+		<s:State name="hidden" />
+		<s:State name="extended" />
+		<s:State name="disabled" />
+	</s:states>
+	<fx:Script><![CDATA[
+		import Collage.Utilities.Logger.*;
+		import Collage.DataEngine.*;
+
+		protected function ButtonClickHandler(event:MouseEvent):void
+		{
+			if (currentState == "extended")
+				currentState = "hidden";
+			else currentState = "extended";
+		}
+
+		protected function addPageHandler(event:MouseEvent):void
+		{
+			if (!hostComponent.appClass || !hostComponent.appClass.pageManager) return;
+			hostComponent.appClass.SaveCurrentPage();
+			hostComponent.appClass.pageManager.NewPage();
+			hostComponent.appClass.editPage.OpenPageWizard();
+			removeButton.enabled = (hostComponent.appClass.pageManager.numPages > 1);
+		}
+
+		protected function removePageHandler(event:MouseEvent):void
+		{
+			if (!hostComponent.appClass || !hostComponent.appClass.pageManager) return;
+			hostComponent.appClass.SaveCurrentPage();
+			hostComponent.appClass.pageManager.RemovePage();
+			removeButton.enabled = (hostComponent.appClass.pageManager.numPages > 1);
+		}
+
+		protected function copyPageHandler(event:MouseEvent):void
+		{
+			if (!hostComponent.appClass || !hostComponent.appClass.pageManager) return;
+			hostComponent.appClass.SaveCurrentPage();
+			hostComponent.appClass.pageManager.CopyPage();
+			removeButton.enabled = (hostComponent.appClass.pageManager.numPages > 1);
+		}
+
+    ]]></fx:Script>
+	<fx:Metadata><![CDATA[ 
+        	[HostComponent("Collage.Application.CollageSideBar")]
+        ]]></fx:Metadata>
+	<s:transitions>
+		<s:Transition fromState="hidden" toState="extended">
+			<s:Resize target="{hostComponent}" duration="200"/>
+		</s:Transition>
+		<s:Transition fromState="extended" toState="hidden">
+			<s:Resize target="{hostComponent}" duration="200"/>
+		</s:Transition>
+	</s:transitions>
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="#dee4ea" alpha="1.0"/>
+		</s:fill>
+	</s:Rect>
+	
+	<s:Rect width="18" left="0" height="100%" >
+		<s:fill>
+			<s:LinearGradient rotation="0">
+				<s:GradientEntry alpha="1.0" color="#E2E2E2" ratio="0"/>
+				<s:GradientEntry alpha="1.0" color="#C7C7C7" ratio="1"/>
+			</s:LinearGradient>
+		</s:fill>
+	</s:Rect>
+	<s:Group width="20" left="0" height="100%" click="ButtonClickHandler(event)">
+		<s:Label text="PAGES &amp; DATASETS" rotation="-90" color="0x555555" fontWeight="normal" horizontalCenter="0" top="5" />
+	</s:Group>
+	<s:Line height="100%" left="17">
+		<s:stroke>
+			<s:SolidColorStroke caps="none" color="#737373" joints="miter" miterLimit="4" weight="1"/>
+		</s:stroke>
+	</s:Line>
+	<s:Group right="0" left="18" height="50%" visible.hidden="false" visible.extended="true">
+		<s:Group height="24" top="0" width="100%" >
+			<s:Label horizontalCenter="0" verticalCenter="0" color="#222222" fontWeight="bold" fontSize="14" text="Pages" />
+		</s:Group>
+		<s:List requireSelection="true" contentBackgroundColor="#dee4ea" borderVisible="false" dragEnabled="true" dragMoveEnabled="true" dropEnabled="true" width="100%" top="24" bottom="30" selectedIndex="@{hostComponent.appClass.pageManager.currentPageIndex}" dataProvider="{hostComponent.appClass.pageManager.pages}">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer focusRect="false" width="100%" height="28" doubleClick="OpenPageWizard()" doubleClickEnabled="true">
+						<s:states>
+							<s:State name="normal"/>
+							<s:State name="hovered"/>
+							<s:State name="selected"/>
+						</s:states>
+						<fx:Script><![CDATA[
+							import Collage.Application.*;
+							
+							override public function set data(value:Object):void {
+								super.data = value;
+								if (data == null) // a renderer's data is set to null when it goes out of view
+									return;
+								txtStart.text = data['displayName'];
+							}
+							
+							public function OpenPageWizard():void
+							{
+								CollageApp.instance.editPage.OpenPageWizard();
+							}
+							
+						]]></fx:Script>
+						<s:Rect width="100%" top="0" bottom="0" includeIn="selected">
+							<s:fill>
+								<s:LinearGradient rotation="90">
+									<s:GradientEntry alpha="1.0" color="#b0bed7" ratio="0"/>
+									<s:GradientEntry alpha="1.0" color="#8295b7" ratio="1"/>
+								</s:LinearGradient>
+							</s:fill>
+						</s:Rect>
+						<s:Line width="100%" top="0" includeIn="selected">
+							<s:stroke>
+								<s:SolidColorStroke caps="none" color="#a2b0cb" weight="1"/>
+							</s:stroke>
+						</s:Line>
+						<s:Group width="100%" height="100%" >
+							<s:Label id="txtStart" color="#222222" color.selected="#ffffff" fontWeight="bold" fontSize="14" width="80%" verticalCenter="2" left="10">
+								<s:filters>
+									<s:DropShadowFilter distance="1" color="#555555" blurX="1" blurY="1" includeIn="selected"/>
+								</s:filters>
+							</s:Label>
+							<mx:Image includeIn="selected" click="OpenPageWizard()" source="@Embed('/Assets/icons/edit.png')" verticalCenter="0" right="10"/>
+						</s:Group>
+					</s:ItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		<s:Group height="30" bottom="0" width="100%" >
+			<s:Rect width="100%" height="100%" >
+				<s:fill>
+					<s:LinearGradient rotation="90">
+						<s:GradientEntry alpha="1.0" color="#E2E2E2" ratio="0"/>
+						<s:GradientEntry alpha="1.0" color="#C7C7C7" ratio="1"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Line width="100%" top="0">
+				<s:stroke>
+					<s:SolidColorStroke caps="none" color="#737373" joints="miter" miterLimit="4" weight="1"/>
+				</s:stroke>
+			</s:Line>
+			<s:HGroup horizontalCenter="0" verticalAlign="middle" height="100%" >
+				<ep:ImageButton width="50" toolTip="Add a new Page" id="addButton" image="@Embed('/Assets/sidebar/document-new.png')" enabled="{(!hostComponent.appClass || !hostComponent.appClass.pageManager) ? false : true}" click="addPageHandler(event)" />
+				<ep:ImageButton width="50" toolTip="Remove the Selected Page" id="removeButton" image="@Embed('/Assets/sidebar/document-close.png')" enabled="{false}" click="removePageHandler(event)" />
+				<ep:ImageButton width="50" toolTip="Duplicate the Selected Page" id="copyButton" image="@Embed('/Assets/sidebar/document-swap.png')" enabled="{(!hostComponent.appClass || !hostComponent.appClass.pageManager) ? false : true}" click="copyPageHandler(event)" />
+			</s:HGroup>
+		</s:Group>
+	</s:Group>
+	<s:Group bottom="0" left="18" right="0" height="50%" visible.hidden="false" visible.extended="true">
+		<s:Group height="24" top="0" width="100%" >
+			<s:Label horizontalCenter="0" verticalCenter="0" color="#222222" fontWeight="bold" fontSize="14" text="Datasets" />
+		</s:Group>
+		<s:List id="dataSetsList" contentBackgroundColor="#dee4ea" requireSelection="false" borderVisible="false" changing="event.preventDefault()" dragEnabled="true" dragMoveEnabled="true" dropEnabled="true" width="100%" top="24" bottom="29" dataProvider="{DataEngine.datasets}">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:ItemRenderer focusRect="false" width="100%" height="40" doubleClick="OpenDataSetWindow()" doubleClickEnabled="true">
+						<s:states>
+							<s:State name="normal"/>
+							<s:State name="hovered"/>
+							<s:State name="editing"/>
+							<s:State name="selected"/>
+						</s:states>
+						<fx:Script><![CDATA[
+							import Collage.Utilities.Logger.*;
+							import Collage.DataEngine.*;
+							import Collage.Application.*;
+						
+							override public function set data(value:Object):void {
+								super.data = value;
+								if (data == null) // a renderer's data is set to null when it goes out of view
+									return;
+									
+								titleText.text = data['title'];
+								//infoText.text = data['totalRows'] + " rows";
+							}
+							public function OpenDataSetWindow():void {
+								var datasetPopup:DataSetWizard = new DataSetWizard();
+								datasetPopup.dataSet = data as DataSet;
+								datasetPopup.setStyle("top", "0");
+								datasetPopup.setStyle("bottom", "0");
+								datasetPopup.setStyle("left", "0");
+								datasetPopup.setStyle("right", "0");
+
+								CollageApp.instance.OpenPopup(datasetPopup, "dataset", false, new Point(400, 350));
+							}
+						]]></fx:Script>
+						<s:Rect width="100%" top="0" bottom="0" includeIn="selected">
+							<s:fill>
+								<s:LinearGradient rotation="90">
+									<s:GradientEntry alpha="1.0" color="#b0bed7" ratio="0"/>
+									<s:GradientEntry alpha="1.0" color="#8295b7" ratio="1"/>
+								</s:LinearGradient>
+							</s:fill>
+						</s:Rect>
+						<s:Line width="100%" top="0" includeIn="selected">
+							<s:stroke>
+								<s:SolidColorStroke caps="none" color="#a2b0cb" weight="1"/>
+							</s:stroke>
+						</s:Line>
+						<s:Group width="100%" height="100%">
+							<s:Label id="titleText" color="#222222" color.selected="#ffffff" maxDisplayedLines="1" fontWeight="bold" fontSize="12" top="5" right="25" left="10"/>
+							<s:Label id="infoText" text="{data.totalRows} rows" color="#555555" color.selected="#ffffff" maxDisplayedLines="1" fontSize="10" bottom="5" right="10" left="10"/>
+							<mx:Image includeIn="hovered" click="OpenDataSetWindow()" source="@Embed('/Assets/icons/edit.png')" verticalCenter="0" right="10" bottom="10"/>
+						</s:Group>
+					</s:ItemRenderer>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+		<s:Group height="30" bottom="0" width="100%" >
+			<s:Rect width="100%" height="100%" >
+				<s:fill>
+					<s:LinearGradient rotation="90">
+						<s:GradientEntry alpha="1.0" color="#E2E2E2" ratio="0"/>
+						<s:GradientEntry alpha="1.0" color="#C7C7C7" ratio="1"/>
+					</s:LinearGradient>
+				</s:fill>
+			</s:Rect>
+			<s:Line width="100%" top="0">
+				<s:stroke>
+					<s:SolidColorStroke caps="none" color="#737373" joints="miter" miterLimit="4" weight="1"/>
+				</s:stroke>
+			</s:Line>
+			<s:HGroup horizontalCenter="0" verticalAlign="middle" height="100%" >
+				<ep:ImageButton width="50" toolTip="Upload a new Dataset" id="uploadDatasetButton" image="@Embed('/Assets/sidebar/upload-dataset.png')" enabled="{(!hostComponent.appClass) ? false : true}" click="hostComponent.appClass.UploadDataFile()" />
+				<ep:ImageButton width="50" toolTip="Refresh Datasets" id="refreshDatasetsButton" image="@Embed('/Assets/icons/refresh-clip.png')" enabled="{(!hostComponent.appClass) ? false : true}" click="DataEngine.LoadAllDataSets()" />
+			</s:HGroup>
+		</s:Group>
+		<s:Line width="100%" top="0">
+			<s:stroke>
+				<s:SolidColorStroke caps="none" color="#737373" joints="miter" miterLimit="4" weight="1"/>
+			</s:stroke>
+		</s:Line>
+	</s:Group>
+	<s:Line width="100%" bottom="0">
+		<s:stroke>
+			<s:SolidColorStroke caps="none" color="#737373" weight="1"/>
+		</s:stroke>
+	</s:Line>
+</s:Skin>
